@@ -64,6 +64,7 @@ class Step7_quote {
 
         // apply
         var alst = _list(ast);
+        if (alst.length == 0) { return ast; }
 
         switch (alst[0]) {
         case MalSymbol("def!"):
@@ -148,7 +149,7 @@ class Step7_quote {
 
         var cmdargs = Compat.cmdline_args();
         var argarray = cmdargs.map(function(a) { return MalString(a); });
-        repl_env.set(MalSymbol("*ARGV*"), MalList(argarray));
+        repl_env.set(MalSymbol("*ARGV*"), MalList(argarray.slice(1)));
 
         // core.mal: defined using the language itself
         rep("(def! not (fn* (a) (if a false true)))");

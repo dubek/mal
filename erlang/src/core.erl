@@ -68,12 +68,31 @@ rest([{Type, [_First|Rest], _Meta}]) when Type == list orelse Type == vector ->
     {list, Rest, nil};
 rest([{Type, [], _Meta}]) when Type == list orelse Type == vector ->
     {list, [], nil};
+rest([nil]) ->
+    {list, [], nil};
 rest([_]) ->
     {error, "rest called on non-sequence"};
 rest([]) ->
     {error, "rest called with no arguments"};
 rest(_) ->
     {error, "rest expects one list argument"}.
+
+seq([{list, [], _Meta}]) ->
+    nil;
+seq([{list, List, _Meta}]) ->
+    {list, List, nil};
+seq([{vector, [], _Meta}]) ->
+    nil;
+seq([{vector, List, _Meta}]) ->
+    {list, List, nil};
+seq([{string, []}]) ->
+    nil;
+seq([{string, S}]) ->
+    {list, lists:map(fun(C) -> {string, [C]} end, S), nil};
+seq([nil]) ->
+    nil;
+seq(_) ->
+    {error, "seq expects one list/vector/string/nil argument"}.
 
 equal_q(Args) ->
     case Args of
@@ -324,9 +343,11 @@ ns() ->
         "readline" => fun readline/1,
         "reset!" => fun types:reset/1,
         "rest" => fun rest/1,
+        "seq" => fun seq/1,
         "sequential?" => fun types:sequential_p/1,
         "slurp" => fun slurp/1,
         "str" => fun str/1,
+        "string?" => fun types:string_p/1,
         "swap!" => fun types:swap/1,
         "symbol" => fun types:symbol/1,
         "symbol?" => fun types:symbol_p/1,

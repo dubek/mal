@@ -41,6 +41,10 @@ x
 ;=>4
 (let* (z 2) (let* (q 9) a))
 ;=>4
+(let* (x 4) (def! a 5))
+;=>5
+a
+;=>4
 
 ;;
 ;; -------- Optional Functionality --------
@@ -54,3 +58,7 @@ x
 ;; Testing vector evaluation
 (let* (a 5 b 6) [3 4 a [b 7] 8])
 ;=>[3 4 5 [6 7] 8]
+
+;; Testing empty list
+()
+;=>()

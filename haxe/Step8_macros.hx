@@ -43,6 +43,7 @@ class Step8_macros {
 
     static function is_macro(ast:MalType, env:Env) {
         return switch(ast) {
+            case MalList([]): false;
             case MalList(a):
                 var a0 = a[0];
                 return symbol_Q(a0) &&
@@ -90,6 +91,7 @@ class Step8_macros {
         if (!list_Q(ast)) { return eval_ast(ast, env); }
 
         var alst = _list(ast);
+        if (alst.length == 0) { return ast; }
         switch (alst[0]) {
         case MalSymbol("def!"):
             return env.set(alst[1], EVAL(alst[2], env));
@@ -183,7 +185,7 @@ class Step8_macros {
 
         var cmdargs = Compat.cmdline_args();
         var argarray = cmdargs.map(function(a) { return MalString(a); });
-        repl_env.set(MalSymbol("*ARGV*"), MalList(argarray));
+        repl_env.set(MalSymbol("*ARGV*"), MalList(argarray.slice(1)));
 
         // core.mal: defined using the language itself
         rep("(def! not (fn* (a) (if a false true)))");

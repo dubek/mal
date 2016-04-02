@@ -2,6 +2,11 @@ defmodule Mix.Tasks.StepAMal do
   import Mal.Types
   alias Mal.Function
 
+  # for escript execution
+  def main(args) do
+    run(args)
+  end
+
   def run(args) do
     env = Mal.Env.new()
     Mal.Env.merge(env, Mal.Core.namespace)
@@ -173,6 +178,7 @@ defmodule Mix.Tasks.StepAMal do
     end
   end
 
+  defp eval({:list, [], _} = empty_ast, env), do: empty_ast
   defp eval({:list, _list, _meta} = ast, env) do
     case macroexpand(ast, env) do
       {:list, list, meta} -> eval_list(list, env, meta)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"strings"
 	"time"
 )
 
@@ -198,6 +199,9 @@ func first(a []MalType) (MalType, error) {
 	if len(a) == 0 {
 		return nil, nil
 	}
+	if a[0] == nil {
+		return nil, nil
+	}
 	slc, e := GetSlice(a[0])
 	if e != nil {
 		return nil, e
@@ -209,6 +213,9 @@ func first(a []MalType) (MalType, error) {
 }
 
 func rest(a []MalType) (MalType, error) {
+	if a[0] == nil {
+		return List{}, nil
+	}
 	slc, e := GetSlice(a[0])
 	if e != nil {
 		return nil, e
@@ -317,6 +324,34 @@ func conj(a []MalType) (MalType, error) {
 	return new_hm, nil
 }
 
+func seq(a []MalType) (MalType, error) {
+	if a[0] == nil {
+		return nil, nil
+	}
+	switch arg := a[0].(type) {
+	case List:
+		if len(arg.Val) == 0 {
+			return nil, nil
+		}
+		return arg, nil
+	case Vector:
+		if len(arg.Val) == 0 {
+			return nil, nil
+		}
+		return List{arg.Val, nil}, nil
+	case string:
+		if len(arg) == 0 {
+			return nil, nil
+		}
+		new_slc := []MalType{}
+		for _, ch := range strings.Split(arg, "") {
+			new_slc = append(new_slc, ch)
+		}
+		return List{new_slc, nil}, nil
+	}
+	return nil, errors.New("seq requires string or list or vector or nil")
+}
+
 // Metadata functions
 func with_meta(a []MalType) (MalType, error) {
 	if len(a) != 2 {
@@ -416,12 +451,15 @@ var NS = map[string]MalType{
 	"symbol?": func(a []MalType) (MalType, error) {
 		return Symbol_Q(a[0]), nil
 	},
+	"string?": func(a []MalType) (MalType, error) {
+		return (String_Q(a[0]) && !Keyword_Q(a[0])), nil
+	},
 	"keyword": func(a []MalType) (MalType, error) {
-                if Keyword_Q(a[0]) {
-                    return a[0], nil
-                } else {
-                    return NewKeyword(a[0].(string))
-                }
+		if Keyword_Q(a[0]) {
+			return a[0], nil
+		} else {
+			return NewKeyword(a[0].(string))
+		}
 	},
 	"keyword?": func(a []MalType) (MalType, error) {
 		return Keyword_Q(a[0]), nil
@@ -505,6 +543,7 @@ var NS = map[string]MalType{
 	"apply":  apply,
 	"map":    do_map,
 	"conj":   conj,
+	"seq":    seq,
 
 	"with-meta": with_meta,
 	"meta":      meta,
