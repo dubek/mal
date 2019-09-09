@@ -21,7 +21,7 @@ WORKDIR /mal
 # Specific implementation requirements
 ##########################################################
 
-RUN apt-get -y install g++ libgmp-dev
+RUN apt-get -y install g++ libgmp-dev libpcre3-dev
 
 RUN cd /tmp && curl -fsSLO https://pike.lysator.liu.se/pub/pike/latest-stable/Pike-v8.0.702.tar.gz \
     && tar xf Pike-v8.0.702.tar.gz \

@@ -1,5 +1,3 @@
-#include "readline.pike"
-
 string READ(string str)
 {
   return str;
@@ -24,7 +22,7 @@ int main()
 {
   while(1)
   {
-    string line=readline("user> ");
+    string line = .Readline.readline("user> ");
     if(!line) break;
     if(strlen(line) == 0) continue;
     write(({ rep(line), "\n" }));
