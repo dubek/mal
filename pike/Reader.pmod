@@ -39,21 +39,21 @@ bool is_digit(int c)
   return '0' <= c && c <= '9';
 }
 
-.Types.MalType read_atom(Reader reader)
+.Types.Val read_atom(Reader reader)
 {
   string token = reader->next();
-  if(is_digit(token[0])) return .Types.MalNumber((int)token);
-  return .Types.MalSymbol(token);
+  if(is_digit(token[0])) return .Types.Number((int)token);
+  return .Types.Symbol(token);
 }
 
-.Types.MalType read_list(Reader reader)
+.Types.Val read_list(Reader reader)
 {
   string start = "(";
   string end = ")";
   string token = reader->next();
   if(token != start) throw("expected '" + start + "'");
   token = reader->peek();
-  array(.Types.MalType) list = ({ });
+  array(.Types.Val) list = ({ });
   while(token != end)
   {
     if(!token) throw("expected '" + end + "', got EOF");
@@ -61,16 +61,16 @@ bool is_digit(int c)
     token = reader->peek();
   }
   reader->next();
-  return .Types.MalList(list);
+  return .Types.List(list);
 }
 
-.Types.MalType reader_macro(Reader reader, string symbol)
+.Types.Val reader_macro(Reader reader, string symbol)
 {
   reader->next();
-  return .Types.MalList(({ .Types.MalSymbol(symbol), read_form(reader) }));
+  return .Types.List(({ .Types.Symbol(symbol), read_form(reader) }));
 }
 
-.Types.MalType read_form(Reader reader)
+.Types.Val read_form(Reader reader)
 {
   string token = reader->peek();
   switch(token)
@@ -100,7 +100,7 @@ bool is_digit(int c)
   }
 }
 
-.Types.MalType read_str(string str)
+.Types.Val read_str(string str)
 {
   return read_form(Reader(tokenize(str)));
 }

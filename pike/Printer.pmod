@@ -1,4 +1,4 @@
-string pr_str(.Types.MalType ast)
+string pr_str(.Types.Val ast)
 {
   return ast->toString();
 }

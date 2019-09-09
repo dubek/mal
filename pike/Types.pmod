@@ -1,11 +1,11 @@
-class MalType
+class Val
 {
   string toString();
 }
 
-class MalNumber
+class Number
 {
-  inherit MalType;
+  inherit Val;
   int value;
   void create(int the_value)
   {
@@ -18,9 +18,9 @@ class MalNumber
   }
 }
 
-class MalSymbol
+class Symbol
 {
-  inherit MalType;
+  inherit Val;
   string value;
   void create(string the_value)
   {
@@ -33,18 +33,18 @@ class MalSymbol
   }
 }
 
-class MalList
+class List
 {
-  inherit MalType;
-  array(MalType) data;
+  inherit Val;
+  array(Val) data;
 
-  void create(array(MalType) the_data)
+  void create(array(Val) the_data)
   {
     data = the_data;
   }
 
   string toString()
   {
-    return "(" + (map(data, lambda(MalType e) { return e.toString(); }) * " ") + ")";
+    return "(" + (map(data, lambda(Val e) { return e.toString(); }) * " ") + ")";
   }
 }
