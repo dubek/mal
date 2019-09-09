@@ -64,13 +64,37 @@ bool is_digit(int c)
   return .Types.MalList(list);
 }
 
+.Types.MalType reader_macro(Reader reader, string symbol)
+{
+  reader->next();
+  return .Types.MalList(({ .Types.MalSymbol(symbol), read_form(reader) }));
+}
+
 .Types.MalType read_form(Reader reader)
 {
   string token = reader->peek();
-  switch(token[0])
+  switch(token)
   {
-    case '(':
+    case "'":
+      return reader_macro(reader, "quote");
+    case "`":
+      return reader_macro(reader, "quasiquote");
+    case "~":
+      return reader_macro(reader, "unquote");
+    case "~@":
+      return reader_macro(reader, "splice-unquote");
+    case "(":
       return read_list(reader);
+    case ")":
+      throw("unexpected ')'");
+    case "[":
+      return read_list(reader);
+    case "]":
+      throw("unexpected ']'");
+    case "{":
+      return read_list(reader);
+    case "}":
+      throw("unexpected '}'");
     default:
       return read_atom(reader);
   }
