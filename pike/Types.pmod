@@ -71,10 +71,23 @@ class Vector
 
 class Map
 {
-  inherit Sequence;
+  inherit Val;
+  mapping(Val:Val) data;
+
+  void create(array(Val) list)
+  {
+    array(Val) keys = Array.everynth(list, 2, 0);
+    array(Val) values = Array.everynth(list, 2, 1);
+    data = mkmapping(keys, values);
+  }
 
   string toString()
   {
-    return "{" + ::toString() + "}";
+    array(string) strs = ({ });
+    foreach(indices(data), Val key)
+    {
+      strs += ({ key.toString(), data[key].toString() });
+    }
+    return "{" + (strs * " ") + "}";
   }
 }
