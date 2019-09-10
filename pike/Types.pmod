@@ -33,6 +33,24 @@ class Symbol
   }
 }
 
+class String
+{
+  inherit Val;
+  string value;
+  void create(string the_value)
+  {
+    value = the_value;
+  }
+
+  string toString()
+  {
+    string s = replace(value, "\\", "\\\\");
+    s = replace(s, "\"", "\\\"");
+    s = replace(s, "\n", "\\n");
+    return "\"" + s + "\"";
+  }
+}
+
 class Sequence
 {
   inherit Val;

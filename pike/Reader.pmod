@@ -1,4 +1,5 @@
-Regexp.PCRE tokenizerRegexp = Regexp.PCRE.Studied("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"([\\\\].|[^\\\\\"])*\"?|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");
+Regexp.PCRE tokenizer_regexp = Regexp.PCRE.Studied("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"([\\\\].|[^\\\\\"])*\"?|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");
+Regexp.PCRE string_regexp = Regexp.PCRE.Studied("^\"(?:[\\\\].|[^\\\\\"])*\"");
 
 class Reader
 {
@@ -28,7 +29,7 @@ class Reader
 array(string) tokenize(string str)
 {
   array(string) tokens = ({ });
-  tokenizerRegexp.matchall(str, lambda(mixed m) {
+  tokenizer_regexp.matchall(str, lambda(mixed m) {
     if(sizeof(m[1]) > 0) tokens += ({ m[1] });
   });
   return tokens;
@@ -39,10 +40,22 @@ bool is_digit(int c)
   return '0' <= c && c <= '9';
 }
 
+.Types.Val unescape_string(string token)
+{
+  if(!string_regexp.match(token)) throw("expected '\"', got EOF");
+  string s = token[1..(sizeof(token) - 2)];
+  s = replace(s, "\\\\", "\u029e");
+  s = replace(s, "\\\"", "\"");
+  s = replace(s, "\\n", "\n");
+  s = replace(s, "\u029e", "\\");
+  return .Types.String(s);
+}
+
 .Types.Val read_atom(Reader reader)
 {
   string token = reader->next();
   if(is_digit(token[0])) return .Types.Number((int)token);
+  if(token[0] == '"') return unescape_string(token);
   return .Types.Symbol(token);
 }
 
@@ -81,6 +94,12 @@ array(.Types.Val) read_seq(Reader reader, string start, string end)
       return reader_macro(reader, "unquote");
     case "~@":
       return reader_macro(reader, "splice-unquote");
+    case "@":
+      return reader_macro(reader, "deref");
+    case "^":
+      reader->next();
+      .Types.Val meta = read_form(reader);
+      return .Types.List(({ .Types.Symbol("with-meta"), read_form(reader), meta }));
     case "(":
       return .Types.List(read_seq(reader, "(", ")"));
     case ")":
