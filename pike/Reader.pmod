@@ -46,22 +46,20 @@ bool is_digit(int c)
   return .Types.Symbol(token);
 }
 
-.Types.Val read_list(Reader reader)
+array(.Types.Val) read_seq(Reader reader, string start, string end)
 {
-  string start = "(";
-  string end = ")";
   string token = reader->next();
   if(token != start) throw("expected '" + start + "'");
   token = reader->peek();
-  array(.Types.Val) list = ({ });
+  array(.Types.Val) elements = ({ });
   while(token != end)
   {
     if(!token) throw("expected '" + end + "', got EOF");
-    list += ({ read_form(reader) });
+    elements += ({ read_form(reader) });
     token = reader->peek();
   }
   reader->next();
-  return .Types.List(list);
+  return elements;
 }
 
 .Types.Val reader_macro(Reader reader, string symbol)
@@ -84,15 +82,15 @@ bool is_digit(int c)
     case "~@":
       return reader_macro(reader, "splice-unquote");
     case "(":
-      return read_list(reader);
+      return .Types.List(read_seq(reader, "(", ")"));
     case ")":
       throw("unexpected ')'");
     case "[":
-      return read_list(reader);
+      return .Types.Vector(read_seq(reader, "[", "]"));
     case "]":
       throw("unexpected ']'");
     case "{":
-      return read_list(reader);
+      return .Types.Map(read_seq(reader, "{", "}"));
     case "}":
       throw("unexpected '}'");
     default:

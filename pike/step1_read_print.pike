@@ -1,14 +1,14 @@
-.Types.MalType READ(string str)
+.Types.Val READ(string str)
 {
   return .Reader.read_str(str);
 }
 
-.Types.MalType EVAL(.Types.MalType ast, string env)
+.Types.Val EVAL(.Types.Val ast, string env)
 {
   return ast;
 }
 
-string PRINT(.Types.MalType exp)
+string PRINT(.Types.Val exp)
 {
   return .Printer.pr_str(exp);
 }

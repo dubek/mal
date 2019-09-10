@@ -33,7 +33,7 @@ class Symbol
   }
 }
 
-class List
+class Sequence
 {
   inherit Val;
   array(Val) data;
@@ -45,6 +45,36 @@ class List
 
   string toString()
   {
-    return "(" + (map(data, lambda(Val e) { return e.toString(); }) * " ") + ")";
+    return map(data, lambda(Val e) { return e.toString(); }) * " ";
+  }
+}
+
+class List
+{
+  inherit Sequence;
+
+  string toString()
+  {
+    return "(" + ::toString() + ")";
+  }
+}
+
+class Vector
+{
+  inherit Sequence;
+
+  string toString()
+  {
+    return "[" + ::toString() + "]";
+  }
+}
+
+class Map
+{
+  inherit Sequence;
+
+  string toString()
+  {
+    return "{" + ::toString() + "}";
   }
 }
