@@ -1,21 +1,14 @@
 class Val
 {
   string toString();
-  string type()
-  {
-    return function_name(object_program(this_object()));
-  }
 }
 
 class Nil
 {
+  constant mal_type = "Nil";
   string toString()
   {
     return "nil";
-  }
-  string type()
-  {
-    return "Nil";
   }
 }
 
@@ -23,13 +16,10 @@ Nil MAL_NIL = Nil();
 
 class True
 {
+  constant mal_type = "True";
   string toString()
   {
     return "true";
-  }
-  string type()
-  {
-    return "True";
   }
 }
 
@@ -37,13 +27,10 @@ True MAL_TRUE = True();
 
 class False
 {
+  constant mal_type = "False";
   string toString()
   {
     return "false";
-  }
-  string type()
-  {
-    return "False";
   }
 }
 
@@ -51,6 +38,7 @@ False MAL_FALSE = False();
 
 class Number
 {
+  constant mal_type = "Number";
   inherit Val;
   int value;
   void create(int the_value)
@@ -66,6 +54,7 @@ class Number
 
 class Symbol
 {
+  constant mal_type = "Symbol";
   inherit Val;
   string value;
   void create(string the_value)
@@ -81,6 +70,7 @@ class Symbol
 
 class String
 {
+  constant mal_type = "String";
   inherit Val;
   string value;
   void create(string the_value)
@@ -121,6 +111,7 @@ class Sequence
 class List
 {
   inherit Sequence;
+  constant mal_type = "List";
 
   string toString()
   {
@@ -131,6 +122,7 @@ class List
 class Vector
 {
   inherit Sequence;
+  constant mal_type = "Vector";
 
   string toString()
   {
@@ -141,6 +133,7 @@ class Vector
 class Map
 {
   inherit Val;
+  constant mal_type = "Map";
   mapping(Val:Val) data;
 
   void create(array(Val) list)

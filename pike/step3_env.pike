@@ -11,7 +11,7 @@ Val READ(string str)
 
 Val eval_ast(Val ast, Env env)
 {
-  switch(ast.type())
+  switch(ast.mal_type)
   {
     case "Symbol":
       return env.get(ast);
@@ -33,9 +33,9 @@ Val eval_ast(Val ast, Env env)
 
 Val EVAL(Val ast, Env env)
 {
-  if(ast.type() != "List") return eval_ast(ast, env);
+  if(ast.mal_type != "List") return eval_ast(ast, env);
   if(ast.emptyp()) return ast;
-  if(ast.data[0].type() == "Symbol") {
+  if(ast.data[0].mal_type == "Symbol") {
     switch(ast.data[0].value)
     {
       case "def!":

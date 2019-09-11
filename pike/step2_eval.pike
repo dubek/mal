@@ -10,7 +10,7 @@ Val READ(string str)
 
 Val eval_ast(Val ast, mapping(string:function) env)
 {
-  switch(ast.type())
+  switch(ast.mal_type)
   {
     case "Symbol":
       function f = env[ast.value];
@@ -34,7 +34,7 @@ Val eval_ast(Val ast, mapping(string:function) env)
 
 Val EVAL(Val ast, mapping(string:function) env)
 {
-  if(ast.type() != "List") return eval_ast(ast, env);
+  if(ast.mal_type != "List") return eval_ast(ast, env);
   if(ast.emptyp()) return ast;
   Val evaled_ast = eval_ast(ast, env);
   function f = evaled_ast.data[0];
