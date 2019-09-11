@@ -1,3 +1,5 @@
+import .Readline;
+
 string READ(string str)
 {
   return str;
@@ -22,7 +24,7 @@ int main()
 {
   while(1)
   {
-    string line = .Readline.readline("user> ");
+    string line = readline("user> ");
     if(!line) break;
     if(strlen(line) == 0) continue;
     write(({ rep(line), "\n" }));

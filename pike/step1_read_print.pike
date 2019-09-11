@@ -1,16 +1,21 @@
-.Types.Val READ(string str)
+import .Printer;
+import .Reader;
+import .Readline;
+import .Types;
+
+Val READ(string str)
 {
-  return .Reader.read_str(str);
+  return read_str(str);
 }
 
-.Types.Val EVAL(.Types.Val ast, string env)
+Val EVAL(Val ast, string env)
 {
   return ast;
 }
 
-string PRINT(.Types.Val exp)
+string PRINT(Val exp)
 {
-  return .Printer.pr_str(exp);
+  return pr_str(exp);
 }
 
 string rep(string str)
@@ -22,7 +27,7 @@ int main()
 {
   while(1)
   {
-    string line = .Readline.readline("user> ");
+    string line = readline("user> ");
     if(!line) break;
     if(strlen(line) == 0) continue;
     if(mixed err = catch { write(({ rep(line), "\n" })); } )

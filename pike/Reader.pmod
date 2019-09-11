@@ -1,3 +1,5 @@
+import .Types;
+
 Regexp.PCRE tokenizer_regexp = Regexp.PCRE.Studied("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"([\\\\].|[^\\\\\"])*\"?|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");
 Regexp.PCRE string_regexp = Regexp.PCRE.Studied("^\"(?:[\\\\].|[^\\\\\"])*\"$");
 Regexp.PCRE number_regexp = Regexp.PCRE.Studied("^-?[0-9]+$");
@@ -41,7 +43,7 @@ bool is_digit(int c)
   return '0' <= c && c <= '9';
 }
 
-.Types.Val unescape_string(string token)
+string unescape_string(string token)
 {
   if(!string_regexp.match(token)) throw("expected '\"', got EOF");
   string s = token[1..(sizeof(token) - 2)];
@@ -49,23 +51,23 @@ bool is_digit(int c)
   s = replace(s, "\\\"", "\"");
   s = replace(s, "\\n", "\n");
   s = replace(s, "\u029e", "\\");
-  return .Types.String(s);
+  return s;
 }
 
-.Types.Val read_atom(Reader reader)
+Val read_atom(Reader reader)
 {
   string token = reader->next();
-  if(number_regexp.match(token)) return .Types.Number((int)token);
-  if(token[0] == '"') return unescape_string(token);
-  return .Types.Symbol(token);
+  if(number_regexp.match(token)) return Number((int)token);
+  if(token[0] == '"') return String(unescape_string(token));
+  return Symbol(token);
 }
 
-array(.Types.Val) read_seq(Reader reader, string start, string end)
+array(Val) read_seq(Reader reader, string start, string end)
 {
   string token = reader->next();
   if(token != start) throw("expected '" + start + "'");
   token = reader->peek();
-  array(.Types.Val) elements = ({ });
+  array(Val) elements = ({ });
   while(token != end)
   {
     if(!token) throw("expected '" + end + "', got EOF");
@@ -76,13 +78,13 @@ array(.Types.Val) read_seq(Reader reader, string start, string end)
   return elements;
 }
 
-.Types.Val reader_macro(Reader reader, string symbol)
+Val reader_macro(Reader reader, string symbol)
 {
   reader->next();
-  return .Types.List(({ .Types.Symbol(symbol), read_form(reader) }));
+  return List(({ Symbol(symbol), read_form(reader) }));
 }
 
-.Types.Val read_form(Reader reader)
+Val read_form(Reader reader)
 {
   string token = reader->peek();
   switch(token)
@@ -99,18 +101,18 @@ array(.Types.Val) read_seq(Reader reader, string start, string end)
       return reader_macro(reader, "deref");
     case "^":
       reader->next();
-      .Types.Val meta = read_form(reader);
-      return .Types.List(({ .Types.Symbol("with-meta"), read_form(reader), meta }));
+      Val meta = read_form(reader);
+      return List(({ Symbol("with-meta"), read_form(reader), meta }));
     case "(":
-      return .Types.List(read_seq(reader, "(", ")"));
+      return List(read_seq(reader, "(", ")"));
     case ")":
       throw("unexpected ')'");
     case "[":
-      return .Types.Vector(read_seq(reader, "[", "]"));
+      return Vector(read_seq(reader, "[", "]"));
     case "]":
       throw("unexpected ']'");
     case "{":
-      return .Types.Map(read_seq(reader, "{", "}"));
+      return Map(read_seq(reader, "{", "}"));
     case "}":
       throw("unexpected '}'");
     default:
@@ -118,7 +120,7 @@ array(.Types.Val) read_seq(Reader reader, string start, string end)
   }
 }
 
-.Types.Val read_str(string str)
+Val read_str(string str)
 {
   return read_form(Reader(tokenize(str)));
 }
