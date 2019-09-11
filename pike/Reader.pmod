@@ -1,5 +1,6 @@
 Regexp.PCRE tokenizer_regexp = Regexp.PCRE.Studied("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"([\\\\].|[^\\\\\"])*\"?|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");
-Regexp.PCRE string_regexp = Regexp.PCRE.Studied("^\"(?:[\\\\].|[^\\\\\"])*\"");
+Regexp.PCRE string_regexp = Regexp.PCRE.Studied("^\"(?:[\\\\].|[^\\\\\"])*\"$");
+Regexp.PCRE number_regexp = Regexp.PCRE.Studied("^-?[0-9]+$");
 
 class Reader
 {
@@ -54,7 +55,7 @@ bool is_digit(int c)
 .Types.Val read_atom(Reader reader)
 {
   string token = reader->next();
-  if(is_digit(token[0])) return .Types.Number((int)token);
+  if(number_regexp.match(token)) return .Types.Number((int)token);
   if(token[0] == '"') return unescape_string(token);
   return .Types.Symbol(token);
 }

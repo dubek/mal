@@ -1,6 +1,10 @@
 class Val
 {
   string toString();
+  string type()
+  {
+    return function_name(object_program(this_object()));
+  }
 }
 
 class Number
@@ -65,6 +69,11 @@ class Sequence
   {
     return map(data, lambda(Val e) { return e.toString(); }) * " ";
   }
+
+  bool emptyp()
+  {
+    return sizeof(data) == 0;
+  }
 }
 
 class List
@@ -95,16 +104,16 @@ class Map
   void create(array(Val) list)
   {
     array(Val) keys = Array.everynth(list, 2, 0);
-    array(Val) values = Array.everynth(list, 2, 1);
-    data = mkmapping(keys, values);
+    array(Val) vals = Array.everynth(list, 2, 1);
+    data = mkmapping(keys, vals);
   }
 
   string toString()
   {
     array(string) strs = ({ });
-    foreach(indices(data), Val key)
+    foreach(data; Val k; Val v)
     {
-      strs += ({ key.toString(), data[key].toString() });
+      strs += ({ k.toString(), v.toString() });
     }
     return "{" + (strs * " ") + "}";
   }
