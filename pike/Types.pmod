@@ -7,6 +7,48 @@ class Val
   }
 }
 
+class Nil
+{
+  string toString()
+  {
+    return "nil";
+  }
+  string type()
+  {
+    return "Nil";
+  }
+}
+
+Nil MAL_NIL = Nil();
+
+class True
+{
+  string toString()
+  {
+    return "true";
+  }
+  string type()
+  {
+    return "True";
+  }
+}
+
+True MAL_TRUE = True();
+
+class False
+{
+  string toString()
+  {
+    return "false";
+  }
+  string type()
+  {
+    return "False";
+  }
+}
+
+False MAL_FALSE = False();
+
 class Number
 {
   inherit Val;
