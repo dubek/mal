@@ -43,7 +43,7 @@ Val EVAL(Val ast, mapping(string:function) env)
 
 string PRINT(Val exp)
 {
-  return pr_str(exp);
+  return pr_str(exp, true);
 }
 
 string rep(string str, mapping(string:function) env)

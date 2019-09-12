@@ -59,6 +59,7 @@ Val read_atom(Reader reader)
   string token = reader->next();
   if(number_regexp.match(token)) return Number((int)token);
   if(token[0] == '"') return String(unescape_string(token));
+  if(token[0] == ':') return Keyword(token[1..]);
   switch(token)
   {
     case "nil":   return MAL_NIL;

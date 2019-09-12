@@ -1,6 +1,6 @@
 import .Types;
 
-string pr_str(Val ast)
+string pr_str(Val ast, bool print_readably)
 {
-  return ast->toString();
+  return ast->to_string(print_readably);
 }

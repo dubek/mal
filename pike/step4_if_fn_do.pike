@@ -75,7 +75,7 @@ Val EVAL(Val ast, Env env)
 
 string PRINT(Val exp)
 {
-  return pr_str(exp);
+  return pr_str(exp, true);
 }
 
 string rep(string str, Env env)
@@ -86,10 +86,10 @@ string rep(string str, Env env)
 int main()
 {
   Env repl_env = Env(0);
-  repl_env.set(Symbol("+"), lambda(Val a, Val b) { return Number(a.value + b.value); });
-  repl_env.set(Symbol("-"), lambda(Val a, Val b) { return Number(a.value - b.value); });
-  repl_env.set(Symbol("*"), lambda(Val a, Val b) { return Number(a.value * b.value); });
-  repl_env.set(Symbol("/"), lambda(Val a, Val b) { return Number(a.value / b.value); });
+  foreach(.Core.NS; string k; function v)
+  {
+    repl_env.set(Symbol(k), v);
+  }
   while(1)
   {
     string line = readline("user> ");

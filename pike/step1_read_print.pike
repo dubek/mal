@@ -15,7 +15,7 @@ Val EVAL(Val ast, string env)
 
 string PRINT(Val exp)
 {
-  return pr_str(exp);
+  return pr_str(exp, true);
 }
 
 string rep(string str)
