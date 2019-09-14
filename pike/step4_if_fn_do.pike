@@ -66,6 +66,8 @@ Val EVAL(Val ast, Env env)
         }
         else
           return EVAL(ast.data[2], env);
+      case "fn*":
+        return lambda(Val ... a) { return EVAL(ast.data[2], Env(env, ast.data[1], List(a))); };
     }
   }
   Val evaled_ast = eval_ast(ast, env);
@@ -90,6 +92,7 @@ int main()
   {
     repl_env.set(Symbol(k), v);
   }
+  rep("(def! not (fn* (a) (if a false true)))", repl_env);
   while(1)
   {
     string line = readline("user> ");
