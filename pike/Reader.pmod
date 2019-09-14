@@ -33,7 +33,7 @@ array(string) tokenize(string str)
 {
   array(string) tokens = ({ });
   tokenizer_regexp.matchall(str, lambda(mixed m) {
-    if(sizeof(m[1]) > 0) tokens += ({ m[1] });
+    if(sizeof(m[1]) > 0 && m[1][0] != ';') tokens += ({ m[1] });
   });
   return tokens;
 }

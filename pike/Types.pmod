@@ -256,4 +256,26 @@ class Fn
   {
     return "#<Fn params=" + params.to_string(true) + ">";
   }
+
+  mixed `()(mixed ... args)
+  {
+    return func(@args);
+  }
+}
+
+class Atom
+{
+  inherit Val;
+  constant mal_type = "Atom";
+  Val data;
+
+  void create(Val the_data)
+  {
+    data = the_data;
+  }
+
+  string to_string(bool print_readably)
+  {
+    return "(atom " + data.to_string(print_readably) + ")";
+  }
 }
