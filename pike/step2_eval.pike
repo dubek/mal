@@ -66,6 +66,7 @@ int main()
     if(strlen(line) == 0) continue;
     if(mixed err = catch { write(({ rep(line, repl_env), "\n" })); } )
     {
+      if(arrayp(err)) err = err[0];
       write(({ "Error: ", err, "\n" }));
     }
   }

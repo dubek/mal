@@ -234,3 +234,26 @@ class Map
     return sizeof(data);
   }
 }
+
+class Fn
+{
+  inherit Val;
+  constant mal_type = "Fn";
+  Val ast;
+  Val params;
+  .Env.Env env;
+  function func;
+
+  void create(Val the_ast, Val the_params, .Env.Env the_env, function the_func)
+  {
+    ast = the_ast;
+    params = the_params;
+    env = the_env;
+    func = the_func;
+  }
+
+  string to_string(bool print_readably)
+  {
+    return "#<Fn params=" + params.to_string(true) + ">";
+  }
+}
