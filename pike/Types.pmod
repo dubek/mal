@@ -13,13 +13,25 @@ class Nil
 {
   inherit Val;
   constant mal_type = "Nil";
+
   string to_string(bool print_readably)
   {
     return "nil";
   }
+
   int count()
   {
     return 0;
+  }
+
+  Val first()
+  {
+    return MAL_NIL;
+  }
+
+  Val rest()
+  {
+    return List(({ }));
   }
 }
 
@@ -171,7 +183,22 @@ class Sequence
     return sizeof(data);
   }
 
-  Val rest();
+  Val nth(int index)
+  {
+    if(index >= count()) throw("nth: index out of range");
+    return data[index];
+  }
+
+  Val first()
+  {
+    if(emptyp()) return MAL_NIL;
+    return data[0];
+  }
+
+  Val rest()
+  {
+    return List(data[1..]);
+  }
 
   bool `==(mixed other)
   {
@@ -195,11 +222,6 @@ class List
   {
     return "(" + ::to_string(print_readably) + ")";
   }
-
-  Val rest()
-  {
-    return List(data[1..]);
-  }
 }
 
 class Vector
@@ -210,11 +232,6 @@ class Vector
   string to_string(bool print_readably)
   {
     return "[" + ::to_string(print_readably) + "]";
-  }
-
-  Val rest()
-  {
-    return Vector(data[1..]);
   }
 }
 
@@ -255,6 +272,7 @@ class Fn
   Val params;
   .Env.Env env;
   function func;
+  bool macro;
 
   void create(Val the_ast, Val the_params, .Env.Env the_env, function the_func)
   {
@@ -262,11 +280,18 @@ class Fn
     params = the_params;
     env = the_env;
     func = the_func;
+    macro = false;
+  }
+
+  void set_macro()
+  {
+    macro = true;
   }
 
   string to_string(bool print_readably)
   {
-    return "#<Fn params=" + params.to_string(true) + ">";
+    string tag = macro ? "Macro" : "Fn";
+    return "#<" + tag + " params=" + params.to_string(true) + ">";
   }
 
   mixed `()(mixed ... args)

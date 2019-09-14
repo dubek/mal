@@ -32,6 +32,9 @@ mapping(string:function) NS = ([
 
   "cons":   lambda(Val a, Val b) { return List(({ a }) + b.data); },
   "concat": lambda(Val ... a) { return List(`+(({ }), @map(a, lambda(Val e) { return e.data; }))); },
+  "nth":    lambda(Val a, Val b) { return a.nth(b.value); },
+  "first":  lambda(Val a) { return a.first(); },
+  "rest":   lambda(Val a) { return a.rest(); },
   "empty?": lambda(Val a) { return to_bool(a.emptyp()); },
   "count":  lambda(Val a) { return Number(a.count()); },
 
