@@ -11,10 +11,10 @@ Val swap_bang(Val atom, mixed f, Val ... args)
 mapping(string:function) NS = ([
   "=":  lambda(Val a, Val b) { return to_bool(a == b); },
 
-  "pr-str":      lambda(Val ... a) { return String(map(a, lambda (Val e) { return pr_str(e, true); }) * " "); },
-  "str":         lambda(Val ... a) { return String(map(a, lambda (Val e) { return pr_str(e, false); }) * ""); },
-  "prn":         lambda(Val ... a) { write(({ map(a, lambda (Val e) { return pr_str(e, true); }) * " ", "\n" })); return MAL_NIL; },
-  "println":     lambda(Val ... a) { write(({ map(a, lambda (Val e) { return pr_str(e, false); }) * " ", "\n" })); return MAL_NIL; },
+  "pr-str":      lambda(Val ... a) { return String(map(a, lambda(Val e) { return pr_str(e, true); }) * " "); },
+  "str":         lambda(Val ... a) { return String(map(a, lambda(Val e) { return pr_str(e, false); }) * ""); },
+  "prn":         lambda(Val ... a) { write(({ map(a, lambda(Val e) { return pr_str(e, true); }) * " ", "\n" })); return MAL_NIL; },
+  "println":     lambda(Val ... a) { write(({ map(a, lambda(Val e) { return pr_str(e, false); }) * " ", "\n" })); return MAL_NIL; },
   "read-string": lambda(Val a) { return read_str(a.value); },
   "slurp":       lambda(Val a) { return String(Stdio.read_file(a.value)); },
 
@@ -30,6 +30,8 @@ mapping(string:function) NS = ([
   "list":  lambda(Val ... a) { return List(a); },
   "list?": lambda(Val a) { return to_bool(a.mal_type == "List"); },
 
+  "cons":   lambda(Val a, Val b) { return List(({ a }) + b.data); },
+  "concat": lambda(Val ... a) { return List(`+(({ }), @map(a, lambda(Val e) { return e.data; }))); },
   "empty?": lambda(Val a) { return to_bool(a.emptyp()); },
   "count":  lambda(Val a) { return Number(a.count()); },
 

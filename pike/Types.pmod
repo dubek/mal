@@ -171,6 +171,8 @@ class Sequence
     return sizeof(data);
   }
 
+  Val rest();
+
   bool `==(mixed other)
   {
     if (!objectp(other)) return 0;
@@ -193,6 +195,11 @@ class List
   {
     return "(" + ::to_string(print_readably) + ")";
   }
+
+  Val rest()
+  {
+    return List(data[1..]);
+  }
 }
 
 class Vector
@@ -203,6 +210,11 @@ class Vector
   string to_string(bool print_readably)
   {
     return "[" + ::to_string(print_readably) + "]";
+  }
+
+  Val rest()
+  {
+    return Vector(data[1..]);
   }
 }
 
