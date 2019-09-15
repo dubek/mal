@@ -107,6 +107,11 @@ class Symbol
   {
     return ::`==(other) && other.value == value;
   }
+
+  int __hash()
+  {
+     return hash(mal_type) ^ hash(value);
+  }
 }
 
 class String
@@ -134,6 +139,11 @@ class String
   {
     return ::`==(other) && other.value == value;
   }
+
+  int __hash()
+  {
+     return hash(mal_type) ^ hash(value);
+  }
 }
 
 class Keyword
@@ -154,6 +164,11 @@ class Keyword
   bool `==(mixed other)
   {
     return ::`==(other) && other.value == value;
+  }
+
+  int __hash()
+  {
+     return hash(mal_type) ^ hash(value);
   }
 }
 
@@ -262,6 +277,38 @@ class Map
   {
     return sizeof(data);
   }
+
+  bool `==(mixed other)
+  {
+    if (!::`==(other)) return 0;
+    if(other.count() != count()) return 0;
+    foreach(data; Val k; Val v)
+    {
+      if(other.data[k] != v) return 0;
+    }
+    return 1;
+  }
+
+  Val assoc(array(Val) list)
+  {
+    array(Val) keys = Array.everynth(list, 2, 0);
+    array(Val) vals = Array.everynth(list, 2, 1);
+    Map result = Map(({ }));
+    result.data = copy_value(data);
+    for(int i = 0; i < sizeof(keys); i++)
+    {
+      result.data[keys[i]] = vals[i];
+    }
+    return result;
+  }
+
+  Val dissoc(array(Val) list)
+  {
+    Map result = Map(({ }));
+    result.data = copy_value(data);
+    foreach(list, Val key) m_delete(result.data, key);
+    return result;
+  }
 }
 
 class Fn
@@ -292,6 +339,30 @@ class Fn
   {
     string tag = macro ? "Macro" : "Fn";
     return "#<" + tag + " params=" + params.to_string(true) + ">";
+  }
+
+  mixed `()(mixed ... args)
+  {
+    return func(@args);
+  }
+}
+
+class BuiltinFn
+{
+  inherit Val;
+  constant mal_type = "BuiltinFn";
+  string name;
+  function func;
+
+  void create(string the_name, function the_func)
+  {
+    name = the_name;
+    func = the_func;
+  }
+
+  string to_string(bool print_readably)
+  {
+    return "#<BuiltinFn " + name + ">";
   }
 
   mixed `()(mixed ... args)

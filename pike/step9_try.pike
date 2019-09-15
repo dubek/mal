@@ -116,7 +116,7 @@ Val EVAL(Val ast, Env env)
             Val catch_clause = ast.data[2];
             Env catch_env = Env(env);
             catch_env.set(catch_clause.data[1], err_val);
-	    return EVAL(catch_clause.data[2], catch_env);
+            return EVAL(catch_clause.data[2], catch_env);
           }
         case "do":
           Val result;
@@ -144,18 +144,18 @@ Val EVAL(Val ast, Env env)
       }
     }
     Val evaled_ast = eval_ast(ast, env);
-    mixed f = evaled_ast.data[0];
-    if(functionp(f))
+    Val f = evaled_ast.data[0];
+    switch(f.mal_type)
     {
-      return f(@evaled_ast.data[1..]);
+      case "BuiltinFn":
+        return f(@evaled_ast.data[1..]);
+      case "Fn":
+        ast = f.ast;
+        env = Env(f.env, f.params, List(evaled_ast.data[1..]));
+        continue; // TCO
+      default:
+        throw("Unknown function type");
     }
-    else if(f.mal_type == "Fn")
-    {
-      ast = f.ast;
-      env = Env(f.env, f.params, List(evaled_ast.data[1..]));
-      continue; // TCO
-    }
-    else throw("Unknown function type");
   }
 }
 
@@ -172,10 +172,7 @@ string rep(string str, Env env)
 int main(int argc, array argv)
 {
   Env repl_env = Env(0);
-  foreach(.Core.NS; string k; function v)
-  {
-    repl_env.set(Symbol(k), v);
-  }
+  foreach(.Core.NS(); Val k; Val v) repl_env.set(k, v);
   repl_env.set(Symbol("eval"), lambda(Val a) { return EVAL(a, repl_env); });
   repl_env.set(Symbol("*ARGV*"), List(map(argv[2..], String)));
   rep("(def! not (fn* (a) (if a false true)))", repl_env);
