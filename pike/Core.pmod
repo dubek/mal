@@ -2,14 +2,15 @@ import .Printer;
 import .Reader;
 import .Types;
 
-Val swap_bang(Val atom, mixed f, Val ... args)
+private Val swap_bang(Val atom, mixed f, Val ... args)
 {
   atom.data = f(@(({ atom.data }) + args));
   return atom.data;
 }
 
 mapping(string:function) NS = ([
-  "=":  lambda(Val a, Val b) { return to_bool(a == b); },
+  "=":     lambda(Val a, Val b) { return to_bool(a == b); },
+  "throw": lambda(Val a) { throw(a); },
 
   "pr-str":      lambda(Val ... a) { return String(map(a, lambda(Val e) { return pr_str(e, true); }) * " "); },
   "str":         lambda(Val ... a) { return String(map(a, lambda(Val e) { return pr_str(e, false); }) * ""); },
