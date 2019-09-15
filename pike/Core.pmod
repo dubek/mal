@@ -1,5 +1,6 @@
 import .Printer;
 import .Reader;
+import .Readline;
 import .Types;
 
 private Val apply(mixed f, Val ... args)
@@ -22,16 +23,21 @@ private mapping(string:function) builtins = ([
   "nil?":     lambda(Val a) { return to_bool(a.mal_type == "Nil"); },
   "true?":    lambda(Val a) { return to_bool(a.mal_type == "True"); },
   "false?":   lambda(Val a) { return to_bool(a.mal_type == "False"); },
+  "string?":  lambda(Val a) { return to_bool(a.mal_type == "String"); },
   "symbol":   lambda(Val a) { return a.mal_type == "Symbol" ? a : Symbol(a.value); },
   "symbol?":  lambda(Val a) { return to_bool(a.mal_type == "Symbol"); },
   "keyword":  lambda(Val a) { return a.mal_type == "Keyword" ? a : Keyword(a.value); },
   "keyword?": lambda(Val a) { return to_bool(a.mal_type == "Keyword"); },
+  "number?":  lambda(Val a) { return to_bool(a.mal_type == "Number"); },
+  "fn?":      lambda(Val a) { return to_bool(a.is_fn && !a.macro); },
+  "macro?":   lambda(Val a) { return to_bool(a.macro); },
 
   "pr-str":      lambda(Val ... a) { return String(map(a, lambda(Val e) { return pr_str(e, true); }) * " "); },
   "str":         lambda(Val ... a) { return String(map(a, lambda(Val e) { return pr_str(e, false); }) * ""); },
   "prn":         lambda(Val ... a) { write(({ map(a, lambda(Val e) { return pr_str(e, true); }) * " ", "\n" })); return MAL_NIL; },
   "println":     lambda(Val ... a) { write(({ map(a, lambda(Val e) { return pr_str(e, false); }) * " ", "\n" })); return MAL_NIL; },
   "read-string": lambda(Val a) { return read_str(a.value); },
+  "readline":    lambda(Val a) { string line = readline(a.value); return line ? String(line) : MAL_NIL; },
   "slurp":       lambda(Val a) { return String(Stdio.read_file(a.value)); },
 
   "<":  lambda(Val a, Val b) { return to_bool(a.value < b.value); },
@@ -42,6 +48,7 @@ private mapping(string:function) builtins = ([
   "-":  lambda(Val a, Val b) { return Number(a.value - b.value); },
   "*":  lambda(Val a, Val b) { return Number(a.value * b.value); },
   "/":  lambda(Val a, Val b) { return Number(a.value / b.value); },
+  "time-ms": lambda() { return Number(0); },
 
   "list":      lambda(Val ... a) { return List(a); },
   "list?":     lambda(Val a) { return to_bool(a.mal_type == "List"); },
@@ -67,11 +74,16 @@ private mapping(string:function) builtins = ([
   "apply":       apply,
   "map":         lambda(mixed f, Val a) { return List(map(a.data, f)); },
 
-  "atom":   lambda(Val a) { return Atom(a); },
-  "atom?":  lambda(Val a) { return to_bool(a.mal_type == "Atom"); },
-  "deref":  lambda(Val a) { return a.data; },
-  "reset!": lambda(Val a, Val b) { a.data = b; return a.data; },
-  "swap!":  swap_bang
+  "conj":      lambda(Val a) { return a; },
+  "seq":       lambda(Val a) { return a; },
+
+  "meta":      lambda(Val a) { return a; },
+  "with-meta": lambda(Val a, Val b) { return a; },
+  "atom":      lambda(Val a) { return Atom(a); },
+  "atom?":     lambda(Val a) { return to_bool(a.mal_type == "Atom"); },
+  "deref":     lambda(Val a) { return a.data; },
+  "reset!":    lambda(Val a, Val b) { a.data = b; return a.data; },
+  "swap!":     swap_bang
 ]);
 
 mapping(Val:Val) NS()

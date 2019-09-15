@@ -315,6 +315,7 @@ class Fn
 {
   inherit Val;
   constant mal_type = "Fn";
+  constant is_fn = true;
   Val ast;
   Val params;
   .Env.Env env;
@@ -351,6 +352,7 @@ class BuiltinFn
 {
   inherit Val;
   constant mal_type = "BuiltinFn";
+  constant is_fn = true;
   string name;
   function func;
 
