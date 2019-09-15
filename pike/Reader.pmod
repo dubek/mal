@@ -129,5 +129,7 @@ Val read_form(Reader reader)
 
 Val read_str(string str)
 {
-  return read_form(Reader(tokenize(str)));
+  array(string) tokens = tokenize(str);
+  if(sizeof(tokens) == 0) return MAL_NIL;
+  return read_form(Reader(tokens));
 }

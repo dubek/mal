@@ -173,7 +173,7 @@ int main(int argc, array argv)
 {
   Env repl_env = Env(0);
   foreach(.Core.NS(); Val k; Val v) repl_env.set(k, v);
-  repl_env.set(Symbol("eval"), lambda(Val a) { return EVAL(a, repl_env); });
+  repl_env.set(Symbol("eval"), BuiltinFn("eval", lambda(Val a) { return EVAL(a, repl_env); }));
   repl_env.set(Symbol("*ARGV*"), List(map(argv[2..], String)));
   rep("(def! not (fn* (a) (if a false true)))", repl_env);
   rep("(def! load-file (fn* (f) (eval (read-string (str \"(do \" (slurp f) \"\nnil)\")))))", repl_env);

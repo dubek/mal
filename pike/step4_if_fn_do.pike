@@ -71,7 +71,7 @@ Val EVAL(Val ast, Env env)
     }
   }
   Val evaled_ast = eval_ast(ast, env);
-  function f = evaled_ast.data[0];
+  Val f = evaled_ast.data[0];
   return f(@evaled_ast.data[1..]);
 }
 
@@ -88,10 +88,7 @@ string rep(string str, Env env)
 int main()
 {
   Env repl_env = Env(0);
-  foreach(.Core.NS; string k; function v)
-  {
-    repl_env.set(Symbol(k), v);
-  }
+  foreach(.Core.NS(); Val k; Val v) repl_env.set(k, v);
   rep("(def! not (fn* (a) (if a false true)))", repl_env);
   while(1)
   {
