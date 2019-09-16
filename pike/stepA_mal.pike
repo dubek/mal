@@ -100,8 +100,7 @@ Val EVAL(Val ast, Env env)
           ast = quasiquote(ast.data[1]);
           continue; // TCO
         case "defmacro!":
-          Val macro = EVAL(ast.data[2], env);
-          macro.set_macro();
+          Val macro = EVAL(ast.data[2], env).clone_as_macro();
           return env.set(ast.data[1], macro);
         case "macroexpand":
           return macroexpand(ast.data[1], env);

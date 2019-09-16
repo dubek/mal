@@ -48,7 +48,7 @@ private mapping(string:function) builtins = ([
   "-":  lambda(Val a, Val b) { return Number(a.value - b.value); },
   "*":  lambda(Val a, Val b) { return Number(a.value * b.value); },
   "/":  lambda(Val a, Val b) { return Number(a.value / b.value); },
-  "time-ms": lambda() { return Number(0); },
+  "time-ms": lambda() { array(int) t = System.gettimeofday(); return Number(t[0] * 1000 + t[1] / 1000); },
 
   "list":      lambda(Val ... a) { return List(a); },
   "list?":     lambda(Val a) { return to_bool(a.mal_type == "List"); },
@@ -74,11 +74,11 @@ private mapping(string:function) builtins = ([
   "apply":       apply,
   "map":         lambda(mixed f, Val a) { return List(map(a.data, f)); },
 
-  "conj":      lambda(Val a) { return a; },
-  "seq":       lambda(Val a) { return a; },
+  "conj":      lambda(Val a, Val ... b) { return a.conj(b); },
+  "seq":       lambda(Val a) { return a.seq(); },
 
-  "meta":      lambda(Val a) { return a; },
-  "with-meta": lambda(Val a, Val b) { return a; },
+  "meta":      lambda(Val a) { return a.meta || MAL_NIL; },
+  "with-meta": lambda(Val a, Val b) { Val new_a = a.clone(); new_a.meta = b; return new_a; },
   "atom":      lambda(Val a) { return Atom(a); },
   "atom?":     lambda(Val a) { return to_bool(a.mal_type == "Atom"); },
   "deref":     lambda(Val a) { return a.data; },

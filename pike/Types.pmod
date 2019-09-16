@@ -1,7 +1,9 @@
 class Val
 {
-  string to_string(bool print_readably);
   constant mal_type = "Val";
+  Val meta;
+  string to_string(bool print_readably);
+  Val clone();
 
   bool `==(mixed other)
   {
@@ -33,6 +35,16 @@ class Nil
   {
     return List(({ }));
   }
+
+  Val clone()
+  {
+    return this_object();
+  }
+
+  Val seq()
+  {
+    return MAL_NIL;
+  }
 }
 
 Nil MAL_NIL = Nil();
@@ -45,6 +57,11 @@ class True
   {
     return "true";
   }
+
+  Val clone()
+  {
+    return this_object();
+  }
 }
 
 True MAL_TRUE = True();
@@ -56,6 +73,11 @@ class False
   string to_string(bool print_readably)
   {
     return "false";
+  }
+
+  Val clone()
+  {
+    return this_object();
   }
 }
 
@@ -86,6 +108,11 @@ class Number
   {
     return ::`==(other) && other.value == value;
   }
+
+  Val clone()
+  {
+    return this_object();
+  }
 }
 
 class Symbol
@@ -111,6 +138,11 @@ class Symbol
   int __hash()
   {
      return hash(mal_type) ^ hash(value);
+  }
+
+  Val clone()
+  {
+    return Symbol(value);
   }
 }
 
@@ -144,6 +176,22 @@ class String
   {
      return hash(mal_type) ^ hash(value);
   }
+
+  Val clone()
+  {
+    return String(value);
+  }
+
+  Val seq()
+  {
+    if(sizeof(value) == 0) return MAL_NIL;
+    array(Val) parts = ({ });
+    for(int i = 0; i < sizeof(value); i++)
+    {
+      parts += ({ String(value[i..i]) });
+    }
+    return List(parts);
+  }
 }
 
 class Keyword
@@ -169,6 +217,11 @@ class Keyword
   int __hash()
   {
      return hash(mal_type) ^ hash(value);
+  }
+
+  Val clone()
+  {
+    return Keyword(value);
   }
 }
 
@@ -226,6 +279,12 @@ class Sequence
     }
     return 1;
   }
+
+  Val seq()
+  {
+    if(emptyp()) return MAL_NIL;
+    return List(data);
+  }
 }
 
 class List
@@ -237,6 +296,16 @@ class List
   {
     return "(" + ::to_string(print_readably) + ")";
   }
+
+  Val clone()
+  {
+    return List(data);
+  }
+
+  Val conj(array(Val) other)
+  {
+    return List(reverse(other) + data);
+  }
 }
 
 class Vector
@@ -247,6 +316,16 @@ class Vector
   string to_string(bool print_readably)
   {
     return "[" + ::to_string(print_readably) + "]";
+  }
+
+  Val clone()
+  {
+    return Vector(data);
+  }
+
+  Val conj(array(Val) other)
+  {
+    return Vector(data + other);
   }
 }
 
@@ -309,6 +388,13 @@ class Map
     foreach(list, Val key) m_delete(result.data, key);
     return result;
   }
+
+  Val clone()
+  {
+    Map m = Map(({ }));
+    m.data = data;
+    return m;
+  }
 }
 
 class Fn
@@ -322,13 +408,13 @@ class Fn
   function func;
   bool macro;
 
-  void create(Val the_ast, Val the_params, .Env.Env the_env, function the_func)
+  void create(Val the_ast, Val the_params, .Env.Env the_env, function the_func, void|bool is_macro)
   {
     ast = the_ast;
     params = the_params;
     env = the_env;
     func = the_func;
-    macro = false;
+    macro = is_macro ? true : false;
   }
 
   void set_macro()
@@ -345,6 +431,16 @@ class Fn
   mixed `()(mixed ... args)
   {
     return func(@args);
+  }
+
+  Val clone()
+  {
+    return Fn(ast, params, env, func);
+  }
+
+  Val clone_as_macro()
+  {
+    return Fn(ast, params, env, func, true);
   }
 }
 
@@ -371,6 +467,11 @@ class BuiltinFn
   {
     return func(@args);
   }
+
+  Val clone()
+  {
+    return BuiltinFn(name, func);
+  }
 }
 
 class Atom
@@ -387,5 +488,10 @@ class Atom
   string to_string(bool print_readably)
   {
     return "(atom " + data.to_string(print_readably) + ")";
+  }
+
+  Val clone()
+  {
+    return Atom(data);
   }
 }
