@@ -4,16 +4,8 @@ Regexp.PCRE tokenizer_regexp = Regexp.PCRE.Studied("[\\s ,]*(~@|[\\[\\]{}()'`~@]
 Regexp.PCRE string_regexp = Regexp.PCRE.Studied("^\"(?:[\\\\].|[^\\\\\"])*\"$");
 Regexp.PCRE number_regexp = Regexp.PCRE.Studied("^-?[0-9]+$");
 
-private class Reader
+private class Reader(private array(string) tokens, private void|int position)
 {
-  array(string) tokens;
-  int position;
-
-  void create(array(string) the_tokens)
-  {
-    tokens = the_tokens;
-  }
-
   string next()
   {
     if(position >= sizeof(tokens)) return 0;

@@ -89,15 +89,10 @@ Val to_bool(bool b)
   return MAL_FALSE;
 }
 
-class Number
+class Number(int value)
 {
   constant mal_type = "Number";
   inherit Val;
-  int value;
-  void create(int the_value)
-  {
-    value = the_value;
-  }
 
   string to_string(bool print_readably)
   {
@@ -115,15 +110,10 @@ class Number
   }
 }
 
-class Symbol
+class Symbol(string value)
 {
   constant mal_type = "Symbol";
   inherit Val;
-  string value;
-  void create(string the_value)
-  {
-    value = the_value;
-  }
 
   string to_string(bool print_readably)
   {
@@ -146,15 +136,10 @@ class Symbol
   }
 }
 
-class String
+class String(string value)
 {
   constant mal_type = "String";
   inherit Val;
-  string value;
-  void create(string the_value)
-  {
-    value = the_value;
-  }
 
   string to_string(bool print_readably)
   {
@@ -194,15 +179,10 @@ class String
   }
 }
 
-class Keyword
+class Keyword(string value)
 {
   constant mal_type = "Keyword";
   inherit Val;
-  string value;
-  void create(string the_value)
-  {
-    value = the_value;
-  }
 
   string to_string(bool print_readably)
   {
@@ -225,16 +205,10 @@ class Keyword
   }
 }
 
-class Sequence
+class Sequence(array(Val) data)
 {
   inherit Val;
-  array(Val) data;
   constant is_sequence = true;
-
-  void create(array(Val) the_data)
-  {
-    data = the_data;
-  }
 
   string to_string(bool print_readably)
   {
@@ -397,25 +371,11 @@ class Map
   }
 }
 
-class Fn
+class Fn(Val ast, Val params, .Env.Env env, function func, void|bool macro)
 {
   inherit Val;
   constant mal_type = "Fn";
   constant is_fn = true;
-  Val ast;
-  Val params;
-  .Env.Env env;
-  function func;
-  bool macro;
-
-  void create(Val the_ast, Val the_params, .Env.Env the_env, function the_func, void|bool is_macro)
-  {
-    ast = the_ast;
-    params = the_params;
-    env = the_env;
-    func = the_func;
-    macro = is_macro ? true : false;
-  }
 
   void set_macro()
   {
@@ -444,19 +404,11 @@ class Fn
   }
 }
 
-class BuiltinFn
+class BuiltinFn(string name, function func)
 {
   inherit Val;
   constant mal_type = "BuiltinFn";
   constant is_fn = true;
-  string name;
-  function func;
-
-  void create(string the_name, function the_func)
-  {
-    name = the_name;
-    func = the_func;
-  }
 
   string to_string(bool print_readably)
   {
@@ -474,16 +426,10 @@ class BuiltinFn
   }
 }
 
-class Atom
+class Atom(Val data)
 {
   inherit Val;
   constant mal_type = "Atom";
-  Val data;
-
-  void create(Val the_data)
-  {
-    data = the_data;
-  }
 
   string to_string(bool print_readably)
   {
