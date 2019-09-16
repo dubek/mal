@@ -24,3 +24,6 @@
 
 (pike-eval "map(({ 1,2,3 }), lambda(int x) { return 1 + x; })")
 ;=>(2 3 4)
+
+(pike-eval "throw(upper_case(\"aaa\" + \"bbb\"))")
+;/Error: AAABBB

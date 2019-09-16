@@ -191,13 +191,13 @@ int main(int argc, array argv)
     if(strlen(line) == 0) continue;
     if(mixed err = catch { write(({ rep(line, repl_env), "\n" })); } )
     {
-      if(objectp(err))
-      {
-        err = err.to_string(true);
-      }
-      else if(arrayp(err))
+      if(arrayp(err))
       {
         err = err[0];
+      }
+      else if(objectp(err))
+      {
+        err = err.to_string(true);
       }
       write(({ "Error: ", err, "\n" }));
     }

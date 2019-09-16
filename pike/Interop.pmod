@@ -2,13 +2,8 @@ import .Types;
 
 Val pike_eval(string expr_str)
 {
-  mixed err;
-  program compiled;
-  err = catch {
-    compiled = compile_string("mixed evaled_func() { return (" + expr_str + "); }", "pike-eval");
-  };
-  if (err) throw("Compilation error");
-  mixed v = compiled()->evaled_func();
+  program prog = compile_string("mixed tmp_func() { return (" + expr_str + "); }", "pike-eval");
+  mixed v = prog()->tmp_func();
   return pike2mal(v);
 }
 
