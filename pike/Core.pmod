@@ -1,3 +1,4 @@
+import .Interop;
 import .Printer;
 import .Reader;
 import .Readline;
@@ -83,7 +84,9 @@ private mapping(string:function) builtins = ([
   "atom?":     lambda(Val a) { return to_bool(a.mal_type == "Atom"); },
   "deref":     lambda(Val a) { return a.data; },
   "reset!":    lambda(Val a, Val b) { a.data = b; return a.data; },
-  "swap!":     swap_bang
+  "swap!":     swap_bang,
+
+  "pike-eval": lambda(Val a) { return pike_eval(a.value); },
 ]);
 
 mapping(Val:Val) NS()
