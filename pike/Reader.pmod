@@ -4,7 +4,7 @@ Regexp.PCRE tokenizer_regexp = Regexp.PCRE.Studied("[\\s ,]*(~@|[\\[\\]{}()'`~@]
 Regexp.PCRE string_regexp = Regexp.PCRE.Studied("^\"(?:[\\\\].|[^\\\\\"])*\"$");
 Regexp.PCRE number_regexp = Regexp.PCRE.Studied("^-?[0-9]+$");
 
-class Reader
+private class Reader
 {
   array(string) tokens;
   int position;
@@ -29,7 +29,7 @@ class Reader
   }
 }
 
-array(string) tokenize(string str)
+private array(string) tokenize(string str)
 {
   array(string) tokens = ({ });
   tokenizer_regexp.matchall(str, lambda(mixed m) {
@@ -38,12 +38,7 @@ array(string) tokenize(string str)
   return tokens;
 }
 
-bool is_digit(int c)
-{
-  return '0' <= c && c <= '9';
-}
-
-string unescape_string(string token)
+private string unescape_string(string token)
 {
   if(!string_regexp.match(token)) throw("expected '\"', got EOF");
   string s = token[1..(sizeof(token) - 2)];
@@ -54,7 +49,7 @@ string unescape_string(string token)
   return s;
 }
 
-Val read_atom(Reader reader)
+private Val read_atom(Reader reader)
 {
   string token = reader->next();
   if(number_regexp.match(token)) return Number((int)token);
@@ -69,7 +64,7 @@ Val read_atom(Reader reader)
   return Symbol(token);
 }
 
-array(Val) read_seq(Reader reader, string start, string end)
+private array(Val) read_seq(Reader reader, string start, string end)
 {
   string token = reader->next();
   if(token != start) throw("expected '" + start + "'");
@@ -85,13 +80,13 @@ array(Val) read_seq(Reader reader, string start, string end)
   return elements;
 }
 
-Val reader_macro(Reader reader, string symbol)
+private Val reader_macro(Reader reader, string symbol)
 {
   reader->next();
   return List(({ Symbol(symbol), read_form(reader) }));
 }
 
-Val read_form(Reader reader)
+private Val read_form(Reader reader)
 {
   string token = reader->peek();
   switch(token)

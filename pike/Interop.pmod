@@ -7,7 +7,7 @@ Val pike_eval(string expr_str)
   return pike2mal(v);
 }
 
-Val pike2mal(mixed v)
+private Val pike2mal(mixed v)
 {
   if(stringp(v)) return String(v);
   if(intp(v)) return Number(v);
