@@ -31,15 +31,15 @@ class Env
 
   Env find(Val key)
   {
-    if (data[key.value]) return this_object();
-    if (outer) return outer.find(key);
+    if(data[key.value]) return this_object();
+    if(outer) return outer.find(key);
     return 0;
   }
 
   Val get(Val key)
   {
     Env found_env = find(key);
-    if (!found_env) throw("'" + key.value + "' not found");
+    if(!found_env) throw("'" + key.value + "' not found");
     return found_env.data[key.value];
   }
 }

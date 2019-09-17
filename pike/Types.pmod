@@ -160,7 +160,7 @@ class String(string value)
 
   string to_string(bool print_readably)
   {
-    if (print_readably) {
+    if(print_readably) {
       string s = replace(value, "\\", "\\\\");
       s = replace(s, "\"", "\\\"");
       s = replace(s, "\n", "\\n");
@@ -261,8 +261,8 @@ class Sequence(array(Val) data)
 
   bool `==(mixed other)
   {
-    if (!objectp(other)) return 0;
-    if (!other.is_sequence) return 0;
+    if(!objectp(other)) return 0;
+    if(!other.is_sequence) return 0;
     if(other.count() != count()) return 0;
     for(int i = 0; i < count(); i++)
     {
@@ -350,7 +350,7 @@ class Map
 
   bool `==(mixed other)
   {
-    if (!::`==(other)) return 0;
+    if(!::`==(other)) return 0;
     if(other.count() != count()) return 0;
     foreach(data; Val k; Val v)
     {

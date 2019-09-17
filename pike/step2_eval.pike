@@ -14,7 +14,7 @@ Val eval_ast(Val ast, mapping(string:function) env)
   {
     case MALTYPE_SYMBOL:
       function f = env[ast.value];
-      if (!f) throw("'" + ast.value + "' not found");
+      if(!f) throw("'" + ast.value + "' not found");
       return f;
     case MALTYPE_LIST:
       return List(map(ast.data, lambda(Val e) { return EVAL(e, env); }));
