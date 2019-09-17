@@ -12,15 +12,15 @@ Val eval_ast(Val ast, mapping(string:function) env)
 {
   switch(ast.mal_type)
   {
-    case "Symbol":
+    case MALTYPE_SYMBOL:
       function f = env[ast.value];
       if (!f) throw("'" + ast.value + "' not found");
       return f;
-    case "List":
+    case MALTYPE_LIST:
       return List(map(ast.data, lambda(Val e) { return EVAL(e, env); }));
-    case "Vector":
+    case MALTYPE_VECTOR:
       return Vector(map(ast.data, lambda(Val e) { return EVAL(e, env); }));
-    case "Map":
+    case MALTYPE_MAP:
       array(Val) elements = ({ });
       foreach(ast.data; Val k; Val v)
       {
@@ -34,7 +34,7 @@ Val eval_ast(Val ast, mapping(string:function) env)
 
 Val EVAL(Val ast, mapping(string:function) env)
 {
-  if(ast.mal_type != "List") return eval_ast(ast, env);
+  if(ast.mal_type != MALTYPE_LIST) return eval_ast(ast, env);
   if(ast.emptyp()) return ast;
   Val evaled_ast = eval_ast(ast, env);
   function f = evaled_ast.data[0];

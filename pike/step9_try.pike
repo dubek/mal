@@ -18,8 +18,8 @@ Val quasiquote(Val ast)
 {
   if(!is_pair(ast)) return List(({ Symbol("quote"), ast }));
   Val ast0 = ast.data[0];
-  if(ast0.mal_type == "Symbol" && ast0.value == "unquote") return ast.data[1];
-  if(is_pair(ast0) && ast0.data[0].mal_type == "Symbol" && ast0.data[0].value == "splice-unquote")
+  if(ast0.mal_type == MALTYPE_SYMBOL && ast0.value == "unquote") return ast.data[1];
+  if(is_pair(ast0) && ast0.data[0].mal_type == MALTYPE_SYMBOL && ast0.data[0].value == "splice-unquote")
   {
     return List(({ Symbol("concat"), ast0.data[1], quasiquote(ast.rest()) }));
   }
@@ -28,9 +28,9 @@ Val quasiquote(Val ast)
 
 bool is_macro_call(Val ast, Env env)
 {
-  if(ast.mal_type == "List" &&
+  if(ast.mal_type == MALTYPE_LIST &&
      !ast.emptyp() &&
-     ast.data[0].mal_type == "Symbol" &&
+     ast.data[0].mal_type == MALTYPE_SYMBOL &&
      env.find(ast.data[0]))
   {
     Val v = env.get(ast.data[0]);
@@ -53,13 +53,13 @@ Val eval_ast(Val ast, Env env)
 {
   switch(ast.mal_type)
   {
-    case "Symbol":
+    case MALTYPE_SYMBOL:
       return env.get(ast);
-    case "List":
+    case MALTYPE_LIST:
       return List(map(ast.data, lambda(Val e) { return EVAL(e, env); }));
-    case "Vector":
+    case MALTYPE_VECTOR:
       return Vector(map(ast.data, lambda(Val e) { return EVAL(e, env); }));
-    case "Map":
+    case MALTYPE_MAP:
       array(Val) elements = ({ });
       foreach(ast.data; Val k; Val v)
       {
@@ -75,11 +75,11 @@ Val EVAL(Val ast, Env env)
 {
   while(true)
   {
-    if(ast.mal_type != "List") return eval_ast(ast, env);
+    if(ast.mal_type != MALTYPE_LIST) return eval_ast(ast, env);
     ast = macroexpand(ast, env);
-    if(ast.mal_type != "List") return eval_ast(ast, env);
+    if(ast.mal_type != MALTYPE_LIST) return eval_ast(ast, env);
     if(ast.emptyp()) return ast;
-    if(ast.data[0].mal_type == "Symbol") {
+    if(ast.data[0].mal_type == MALTYPE_SYMBOL) {
       switch(ast.data[0].value)
       {
         case "def!":
@@ -127,7 +127,7 @@ Val EVAL(Val ast, Env env)
           continue; // TCO
         case "if":
           Val cond = EVAL(ast.data[1], env);
-          if(cond.mal_type == "False" || cond.mal_type == "Nil")
+          if(cond.mal_type == MALTYPE_FALSE || cond.mal_type == MALTYPE_NIL)
           {
             if(sizeof(ast.data) > 3)
               ast = ast.data[3];
@@ -146,9 +146,9 @@ Val EVAL(Val ast, Env env)
     Val f = evaled_ast.data[0];
     switch(f.mal_type)
     {
-      case "BuiltinFn":
+      case MALTYPE_BUILTINFN:
         return f(@evaled_ast.data[1..]);
-      case "Fn":
+      case MALTYPE_FN:
         ast = f.ast;
         env = Env(f.env, f.params, List(evaled_ast.data[1..]));
         continue; // TCO
