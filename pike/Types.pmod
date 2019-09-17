@@ -1,6 +1,23 @@
+enum MalType {
+  MALTYPE_UNDEFINED,
+  MALTYPE_NIL,
+  MALTYPE_TRUE,
+  MALTYPE_FALSE,
+  MALTYPE_NUMBER,
+  MALTYPE_SYMBOL,
+  MALTYPE_STRING,
+  MALTYPE_KEYWORD,
+  MALTYPE_LIST,
+  MALTYPE_VECTOR,
+  MALTYPE_MAP,
+  MALTYPE_FN,
+  MALTYPE_BUILTINFN,
+  MALTYPE_ATOM,
+};
+
 class Val
 {
-  constant mal_type = "Val";
+  constant mal_type = MALTYPE_UNDEFINED;
   Val meta;
   string to_string(bool print_readably);
   Val clone();
@@ -14,7 +31,7 @@ class Val
 class Nil
 {
   inherit Val;
-  constant mal_type = "Nil";
+  constant mal_type = MALTYPE_NIL;
 
   string to_string(bool print_readably)
   {
@@ -52,7 +69,7 @@ Nil MAL_NIL = Nil();
 class True
 {
   inherit Val;
-  constant mal_type = "True";
+  constant mal_type = MALTYPE_TRUE;
   string to_string(bool print_readably)
   {
     return "true";
@@ -69,7 +86,7 @@ True MAL_TRUE = True();
 class False
 {
   inherit Val;
-  constant mal_type = "False";
+  constant mal_type = MALTYPE_FALSE;
   string to_string(bool print_readably)
   {
     return "false";
@@ -91,7 +108,7 @@ Val to_bool(bool b)
 
 class Number(int value)
 {
-  constant mal_type = "Number";
+  constant mal_type = MALTYPE_NUMBER;
   inherit Val;
 
   string to_string(bool print_readably)
@@ -112,7 +129,7 @@ class Number(int value)
 
 class Symbol(string value)
 {
-  constant mal_type = "Symbol";
+  constant mal_type = MALTYPE_SYMBOL;
   inherit Val;
 
   string to_string(bool print_readably)
@@ -127,7 +144,7 @@ class Symbol(string value)
 
   int __hash()
   {
-     return hash(mal_type) ^ hash(value);
+     return hash((string)mal_type) ^ hash(value);
   }
 
   Val clone()
@@ -138,7 +155,7 @@ class Symbol(string value)
 
 class String(string value)
 {
-  constant mal_type = "String";
+  constant mal_type = MALTYPE_STRING;
   inherit Val;
 
   string to_string(bool print_readably)
@@ -159,7 +176,7 @@ class String(string value)
 
   int __hash()
   {
-     return hash(mal_type) ^ hash(value);
+     return hash((string)mal_type) ^ hash(value);
   }
 
   Val clone()
@@ -181,7 +198,7 @@ class String(string value)
 
 class Keyword(string value)
 {
-  constant mal_type = "Keyword";
+  constant mal_type = MALTYPE_KEYWORD;
   inherit Val;
 
   string to_string(bool print_readably)
@@ -196,7 +213,7 @@ class Keyword(string value)
 
   int __hash()
   {
-     return hash(mal_type) ^ hash(value);
+     return hash((string)mal_type) ^ hash(value);
   }
 
   Val clone()
@@ -264,7 +281,7 @@ class Sequence(array(Val) data)
 class List
 {
   inherit Sequence;
-  constant mal_type = "List";
+  constant mal_type = MALTYPE_LIST;
 
   string to_string(bool print_readably)
   {
@@ -285,7 +302,7 @@ class List
 class Vector
 {
   inherit Sequence;
-  constant mal_type = "Vector";
+  constant mal_type = MALTYPE_VECTOR;
 
   string to_string(bool print_readably)
   {
@@ -306,7 +323,7 @@ class Vector
 class Map
 {
   inherit Val;
-  constant mal_type = "Map";
+  constant mal_type = MALTYPE_MAP;
   mapping(Val:Val) data;
 
   void create(array(Val) list)
@@ -374,7 +391,7 @@ class Map
 class Fn(Val ast, Val params, .Env.Env env, function func, void|bool macro)
 {
   inherit Val;
-  constant mal_type = "Fn";
+  constant mal_type = MALTYPE_FN;
   constant is_fn = true;
 
   void set_macro()
@@ -407,7 +424,7 @@ class Fn(Val ast, Val params, .Env.Env env, function func, void|bool macro)
 class BuiltinFn(string name, function func)
 {
   inherit Val;
-  constant mal_type = "BuiltinFn";
+  constant mal_type = MALTYPE_BUILTINFN;
   constant is_fn = true;
 
   string to_string(bool print_readably)
@@ -429,7 +446,7 @@ class BuiltinFn(string name, function func)
 class Atom(Val data)
 {
   inherit Val;
-  constant mal_type = "Atom";
+  constant mal_type = MALTYPE_ATOM;
 
   string to_string(bool print_readably)
   {
