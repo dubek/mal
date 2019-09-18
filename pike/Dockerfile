@@ -21,12 +21,4 @@ WORKDIR /mal
 # Specific implementation requirements
 ##########################################################
 
-RUN apt-get -y install g++ libgmp-dev libpcre3-dev
-
-RUN cd /tmp && curl -fsSLO https://pike.lysator.liu.se/pub/pike/latest-stable/Pike-v8.0.702.tar.gz \
-    && tar xf Pike-v8.0.702.tar.gz \
-    && cd Pike-v8.0.702 \
-    && make install CONFIGUREARGS="--without-devpoll --without-gdbm --without-zlib --without-mysql --without-nettle" \
-    && cd /tmp && rm -rf /tmp/Pike-v8.0.702.tar.gz /tmp/Pike-v8.0.702
-
-ENV HOME /mal
+RUN apt-get -y install pike8.0 pike8.0-pcre
