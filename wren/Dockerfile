@@ -21,10 +21,11 @@ WORKDIR /mal
 # Specific implementation requirements
 ##########################################################
 
-RUN apt-get -y install g++ git
+RUN apt-get -y install g++
+RUN apt-get -y install git
 
 RUN cd /tmp && git clone https://github.com/wren-lang/wren.git \
     && cd wren \
-    && make vm \
-    && cp ./wren /usr/bin/
+    && make \
+    && cp ./wren /usr/bin/ \
     && cd /tmp && rm -rf wren
