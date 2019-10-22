@@ -1,9 +1,11 @@
 import "./readline" for Readline
+import "./reader" for MalReader
+import "./printer" for Printer
 
 class Mal {
 
   static read(str) {
-    return str
+    return MalReader.read_str(str)
   }
 
   static eval(ast, env) {
@@ -11,7 +13,7 @@ class Mal {
   }
 
   static print(ast) {
-    return ast
+    return Printer.pr_str(ast)
   }
 
   static rep(str) {
@@ -25,9 +27,11 @@ class Mal {
         line = Readline.readLine("user> ")
         if (line != "") System.print(rep(line))
       }
-      fiber.try()
+      var error = fiber.try()
       if (line == null) break
+      if (error) System.print("Error: %(error)")
     }
+    System.print("")
   }
 }
 
