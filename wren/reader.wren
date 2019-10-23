@@ -1,5 +1,81 @@
-import "pcre2" for Regexp
 import "./types" for MalSymbol, MalList, MalVector, MalMap
+
+class Tokenizer {
+  construct new(s) {
+    _s = s
+  }
+
+  tokenize() {
+    _pos = 0
+    var tokens = []
+    while (true) {
+      var token = nextToken()
+      if (token == null) break
+      if (token.count > 0) tokens.add(token)
+    }
+    return tokens
+  }
+
+  static eolChars { "\r\n" }
+  static whitespace { " ,\r\n\t" }
+  static delimiters { "[]{}()'`^@" }
+  static separators { Tokenizer.whitespace + "[]{}()'\"`,;" }
+
+  nextToken() {
+    if (isEOF()) return null
+    var ch = curr
+    if (Tokenizer.whitespace.contains(ch)) {
+      advance()
+      return ""
+    }
+    if (Tokenizer.delimiters.contains(ch)) {
+      advance()
+      return ch
+    }
+    if (ch == "~") {
+      advance()
+      if (!isEOF() && curr == "@") {
+        advance()
+        return "~@"
+      } else {
+        return "~"
+      }
+    }
+    if (ch == ";") {
+      advance()
+      while (!isEOF() && !Tokenizer.eolChars.contains(curr)) advance()
+      return ""
+    }
+    if (ch == "\"") {
+      var s = ch
+      advance()
+      while (!isEOF() && curr != "\"") {
+        if (curr == "\\") {
+          s = s + curr
+          advance()
+          if (isEOF()) Fiber.abort("expected '\"', got EOF 111")
+        }
+        s = s + curr
+        advance()
+      }
+      if (isEOF()) Fiber.abort("expected '\"', got EOF 222")
+      s = s + curr
+      advance()
+      return s
+    }
+    var token = ch
+    advance()
+    while (!isEOF() && !Tokenizer.separators.contains(curr)) {
+      token = token + curr
+      advance()
+    }
+    return token
+  }
+
+  curr { _s[_pos] }
+  isEOF() { _pos >= _s.count }
+  advance() { _pos = _pos + 1 }
+}
 
 class Reader {
   construct new(tokens) {
@@ -21,31 +97,27 @@ class Reader {
 }
 
 class MalReader {
-  static token_re { Regexp.new("[\\s,]*(~@|[\\[\\]{}()'`~^@]|\"(?:\\\\.|[^\\\\\"])*\"?|;[^\n]*|[^\\s\\[\\]{}('\"`,;)]*)") }
-  static string_re { Regexp.new("^\"(?:\\\\.|[^\\\\\"])*\"$") }
-  static number_re { Regexp.new("^-?[0-9]+$") }
-
-  static tokenize(s) {
-    var tokens = []
-    var offset = 0
-    while (offset < s.count) {
-      var m = token_re.match(s, offset)
-      if (m.count == 0) break
-      tokens.add(m[1])
-      offset = m.endOffset(0)
-    }
-    return tokens
+  static parse_str(token) {
+    return token.count > 2 ? token[1..-2] : ""
   }
 
-  static parse_str(token) {
-    return token[1..-2]
+  static is_all_digits(s) {
+    if (s.count == 0) return false
+    for (c in s) {
+      var b = c.bytes[0]
+      if (b < 0x30 || b > 0x39) return false
+    }
+    return true
+  }
+
+  static is_number(token) {
+    return token.startsWith("-") ? is_all_digits(token[1..-1]) : is_all_digits(token)
   }
 
   static read_atom(rdr) {
     var token = rdr.next()
-    if (number_re.match(token).count > 0) return Num.fromString(token)
-    if (string_re.match(token).count > 0) return parse_str(token)
-    if (token.startsWith("\"")) Fiber.abort("expected '\"', got EOF")
+    if (is_number(token)) return Num.fromString(token)
+    if (token.startsWith("\"")) return parse_str(token)
     if (token.startsWith(":")) return "\u029e%(token[1..-1])" // keyword
     if (token == "nil") return null
     if (token == "true") return true
@@ -94,7 +166,7 @@ class MalReader {
   }
 
   static read_str(s) {
-    var tokens = tokenize(s)
+    var tokens = Tokenizer.new(s).tokenize()
     if (tokens.count == 0) return null
     return read_form(Reader.new(tokens))
   }

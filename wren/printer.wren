@@ -35,7 +35,7 @@ class Printer {
     if (obj is MalVector) return "[%(joinElements(obj.elements, print_readably))]"
     if (obj is MalMap) return "{%(joinMapElements(obj.data, print_readably))}"
     if (obj is String) {
-      if (obj[0] == "\u029e") return ":%(obj[1..-1])"
+      if (obj.count > 0 && obj[0] == "\u029e") return ":%(obj[1..-1])"
       return print_readably ? "\"%(obj)\"" : obj
     }
     return obj.toString
