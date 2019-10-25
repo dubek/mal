@@ -17,7 +17,7 @@ class Printer {
   static joinMapElements(data, print_readably) {
     var s = ""
     for (e in data) {
-      var e_str = pr_str(e, print_readably)
+      var e_str = pr_str(e.key, print_readably) + " " + pr_str(e.value, print_readably)
       if (s == "") {
         s = s + e_str
       } else {
