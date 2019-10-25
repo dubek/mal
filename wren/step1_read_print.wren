@@ -3,7 +3,6 @@ import "./reader" for MalReader
 import "./printer" for Printer
 
 class Mal {
-
   static read(str) {
     return MalReader.read_str(str)
   }
@@ -22,16 +21,17 @@ class Mal {
 
   static main() {
     while (true) {
-      var line = null
-      var fiber = Fiber.new {
-        line = Readline.readLine("user> ")
-        if (line != "") System.print(rep(line))
-      }
-      var error = fiber.try()
+      var line = Readline.readLine("user> ")
       if (line == null) break
-      if (error) System.print("Error: %(error)")
+      if (line != "") {
+        var fiber = Fiber.new {
+          System.print(rep(line))
+        }
+        var error = fiber.try()
+        if (error) System.print("Error: %(error)")
+      }
     }
-    System.print("")
+    System.print()
   }
 }
 

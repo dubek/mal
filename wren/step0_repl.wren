@@ -1,7 +1,6 @@
 import "./readline" for Readline
 
 class Mal {
-
   static read(str) {
     return str
   }
@@ -20,14 +19,11 @@ class Mal {
 
   static main() {
     while (true) {
-      var line = null
-      var fiber = Fiber.new {
-        line = Readline.readLine("user> ")
-        if (line != "") System.print(rep(line))
-      }
-      fiber.try()
+      var line = Readline.readLine("user> ")
       if (line == null) break
+      if (line != "") System.print(rep(line))
     }
+    System.print()
   }
 }
 
