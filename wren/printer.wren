@@ -2,29 +2,11 @@ import "./types" for MalList, MalVector, MalMap
 
 class Printer {
   static joinElements(elements, print_readably) {
-    var s = ""
-    for (e in elements) {
-      var e_str = pr_str(e, print_readably)
-      if (s == "") {
-        s = s + e_str
-      } else {
-        s = s + " " + e_str
-      }
-    }
-    return s
+    return elements.map { |e| pr_str(e, print_readably) }.join(" ")
   }
 
   static joinMapElements(data, print_readably) {
-    var s = ""
-    for (e in data) {
-      var e_str = pr_str(e.key, print_readably) + " " + pr_str(e.value, print_readably)
-      if (s == "") {
-        s = s + e_str
-      } else {
-        s = s + " " + e_str
-      }
-    }
-    return s
+    return data.map { |e| pr_str(e.key, print_readably) + " " + pr_str(e.value, print_readably) }.join(" ")
   }
 
   static pr_str(obj) { pr_str(obj, true) }
