@@ -1,4 +1,6 @@
 class MalVal {
+  static newKeyword(value) { "\u029e%(value)" }
+  static isKeyword(obj) { obj is String && obj.count > 0 && obj[0] == "\u029e" }
 }
 
 class MalSymbol is MalVal {

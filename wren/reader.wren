@@ -1,4 +1,4 @@
-import "./types" for MalSymbol, MalList, MalVector, MalMap
+import "./types" for MalVal, MalSymbol, MalList, MalVector, MalMap
 
 class Tokenizer {
   construct new(s) {
@@ -103,11 +103,7 @@ class MalReader {
 
   static is_all_digits(s) {
     if (s.count == 0) return false
-    for (c in s) {
-      var b = c.bytes[0]
-      if (b < 0x30 || b > 0x39) return false
-    }
-    return true
+    return s.all { |c| c.bytes[0] >= 0x30 && c.bytes[0] <= 0x39 }
   }
 
   static is_number(token) {
@@ -118,7 +114,7 @@ class MalReader {
     var token = rdr.next()
     if (is_number(token)) return Num.fromString(token)
     if (token.startsWith("\"")) return parse_str(token)
-    if (token.startsWith(":")) return "\u029e%(token[1..-1])" // keyword
+    if (token.startsWith(":")) return MalVal.newKeyword(token[1..-1])
     if (token == "nil") return null
     if (token == "true") return true
     if (token == "false") return false
