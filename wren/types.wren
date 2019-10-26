@@ -51,3 +51,16 @@ class MalMap is MalVal {
   }
   data { _data }
 }
+
+class MalFn is MalVal {
+  construct new(ast, params, env, fn) {
+    _ast = ast
+    _params = params
+    _env = env
+    _fn = fn
+  }
+  ast { _ast }
+  params { _params }
+  env { _env }
+  call(args) { _fn.call(args) }
+}
