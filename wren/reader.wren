@@ -98,7 +98,8 @@ class Reader {
 
 class MalReader {
   static parse_str(token) {
-    return token.count > 2 ? token[1..-2] : ""
+    if (token.count <= 2) return ""
+    return token[1..-2].replace("\\\\", "\u029e").replace("\\\"", "\"").replace("\\n", "\n").replace("\u029e", "\\")
   }
 
   static is_all_digits(s) {

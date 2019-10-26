@@ -1,3 +1,5 @@
+import "./types" for MalList
+
 class Env {
   construct new() {
     _outer = null
@@ -7,11 +9,20 @@ class Env {
     _outer = outer
     _data = {}
   }
-
-  set(k, v) {
-    _data[k] = v
-    return v
+  construct new(outer, binds, exprs) {
+    _outer = outer
+    _data = {}
+    for (i in 0...binds.count) {
+      if (binds[i].value == "&") {
+        _data[binds[i + 1].value] = MalList.new(exprs[i..-1])
+        break
+      } else {
+        _data[binds[i].value] = exprs[i]
+      }
+    }
   }
+
+  set(k, v) { _data[k] = v }
 
   find(k) {
     if (_data.containsKey(k)) return this

@@ -3,6 +3,7 @@ import "./readline" for Readline
 import "./reader" for MalReader
 import "./printer" for Printer
 import "./types" for MalSymbol, MalList, MalVector, MalMap
+import "./core" for Core
 
 class Mal {
   static read(str) {
@@ -41,6 +42,17 @@ class Mal {
           i = i + 2
         }
         return eval(ast[2], letEnv)
+      } else if (ast[0].value == "do") {
+        return eval_ast(ast.rest, env)[-1]
+      } else if (ast[0].value == "if") {
+        var condval = eval(ast[1], env)
+        if (condval) {
+          return eval(ast[2], env)
+        } else {
+          return ast.count > 3 ? eval(ast[3], env) : null
+        }
+      } else if (ast[0].value == "fn*") {
+        return Fn.new { |a| eval(ast[2], Env.new(env, ast[1].elements, a)) }
       }
     }
     var evaled_ast = eval_ast(ast, env)
@@ -58,10 +70,10 @@ class Mal {
 
   static main() {
     __repl_env = Env.new()
-    __repl_env.set("+", Fn.new { |a| a[0] + a[1] })
-    __repl_env.set("-", Fn.new { |a| a[0] - a[1] })
-    __repl_env.set("*", Fn.new { |a| a[0] * a[1] })
-    __repl_env.set("/", Fn.new { |a| a[0] / a[1] })
+    // core.wren: defined in wren
+    for (e in Core.ns) { __repl_env.set(e.key, e.value) }
+    // core.mal: defined using the language itself
+    rep("(def! not (fn* (a) (if a false true)))")
     while (true) {
       var line = Readline.readLine("user> ")
       if (line == null) break

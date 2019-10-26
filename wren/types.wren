@@ -15,14 +15,28 @@ class MalSequential is MalVal {
   [index] { _elements[index] }
   isEmpty { _elements.count == 0 }
   count { _elements.count }
+  rest { drop(1) }
+  ==(other) {
+    if (!(other is MalSequential)) return false
+    if (other.count != count) return false
+    for (i in 0...count) {
+      if (other[i] != this[i]) return false
+    }
+    return true
+    // System.print("DEBUG MalSequential.== called")
+    // return other is MalSequential && other.elements == _elements
+  }
+  !=(other) { !(this == other) }
 }
 
 class MalList is MalSequential {
   construct new(elements) { super(elements) }
+  drop(index) { MalList.new(elements[index..-1]) }
 }
 
 class MalVector is MalSequential {
   construct new(elements) { super(elements) }
+  drop(index) { MalVector.new(elements[index..-1]) }
 }
 
 class MalMap is MalVal {
