@@ -14,6 +14,7 @@ class MalSequential is MalVal {
   elements { _elements }
   [index] { _elements[index] }
   isEmpty { _elements.count == 0 }
+  count { _elements.count }
 }
 
 class MalList is MalSequential {
