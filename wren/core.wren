@@ -1,5 +1,7 @@
+import "io" for File
+import "./reader" for MalReader
 import "./printer" for Printer
-import "./types" for MalList
+import "./types" for MalList, MalAtom
 
 class Core {
   static ns {
@@ -16,6 +18,8 @@ class Core {
                    System.print(a.map { |e| Printer.pr_str(e, false) }.join(" "))
                    return null
                  },
+      "read-string": Fn.new { |a| MalReader.read_str(a[0]) },
+      "slurp":       Fn.new { |a| File.read(a[0]) },
 
       "<":  Fn.new { |a| a[0] < a[1] },
       "<=": Fn.new { |a| a[0] <= a[1] },
@@ -30,7 +34,13 @@ class Core {
       "list?": Fn.new { |a| a[0] is MalList },
 
       "empty?": Fn.new { |a| a[0].isEmpty },
-      "count":  Fn.new { |a| a[0] == null ? 0 : a[0].count }
+      "count":  Fn.new { |a| a[0] == null ? 0 : a[0].count },
+
+      "atom":   Fn.new { |a| MalAtom.new(a[0]) },
+      "atom?":  Fn.new { |a| a[0] is MalAtom },
+      "deref":  Fn.new { |a| a[0].value },
+      "reset!": Fn.new { |a| a[0].value = a[1] },
+      "swap!":  Fn.new { |a| a[0].value = a[1].call([a[0].value] + a[2..-1]) }
     }
   }
 }

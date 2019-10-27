@@ -64,3 +64,9 @@ class MalFn is MalVal {
   env { _env }
   call(args) { _fn.call(args) }
 }
+
+class MalAtom is MalVal {
+  construct new(value) { _value = value }
+  value { _value }
+  value=(other) { _value = other }
+}
