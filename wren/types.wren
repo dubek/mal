@@ -7,6 +7,8 @@ class MalSymbol is MalVal {
   construct new(value) { _value = value }
   value { _value }
   toString { _value }
+  ==(other) { other is MalSymbol && other.value == _value }
+  !=(other) { !(this == other) }
 }
 
 class MalSequential is MalVal {

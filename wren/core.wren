@@ -33,6 +33,8 @@ class Core {
       "list":  Fn.new { |a| MalList.new(a) },
       "list?": Fn.new { |a| a[0] is MalList },
 
+      "cons":   Fn.new { |a| MalList.new([a[0]] + a[1].elements) },
+      "concat": Fn.new { |a| MalList.new(a.reduce([]) { |acc,e| acc + e.elements }) },
       "empty?": Fn.new { |a| a[0].isEmpty },
       "count":  Fn.new { |a| a[0] == null ? 0 : a[0].count },
 
