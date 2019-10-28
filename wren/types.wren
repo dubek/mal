@@ -17,7 +17,8 @@ class MalSequential is MalVal {
   [index] { _elements[index] }
   isEmpty { _elements.count == 0 }
   count { _elements.count }
-  rest { drop(1) }
+  first { isEmpty ? null : _elements[0] }
+  rest { MalList.new(isEmpty ? [] : elements[1..-1]) }
   ==(other) {
     if (!(other is MalSequential)) return false
     if (other.count != count) return false
@@ -33,12 +34,10 @@ class MalSequential is MalVal {
 
 class MalList is MalSequential {
   construct new(elements) { super(elements) }
-  drop(index) { MalList.new(elements[index..-1]) }
 }
 
 class MalVector is MalSequential {
   construct new(elements) { super(elements) }
-  drop(index) { MalVector.new(elements[index..-1]) }
 }
 
 class MalMap is MalVal {
@@ -60,10 +59,16 @@ class MalFn is MalVal {
     _params = params
     _env = env
     _fn = fn
+    _isMacro = false
   }
   ast { _ast }
   params { _params }
   env { _env }
+  isMacro { _isMacro }
+  makeMacro() {
+    _isMacro = true
+    return this
+  }
   call(args) { _fn.call(args) }
 }
 

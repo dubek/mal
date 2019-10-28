@@ -35,6 +35,9 @@ class Core {
 
       "cons":   Fn.new { |a| MalList.new([a[0]] + a[1].elements) },
       "concat": Fn.new { |a| MalList.new(a.reduce([]) { |acc,e| acc + e.elements }) },
+      "nth":    Fn.new { |a| a[0][a[1]] || Fiber.abort("nth: index out of range") },
+      "first":  Fn.new { |a| a[0] == null ? null : a[0].first },
+      "rest":   Fn.new { |a| a[0] == null ? MalList.new([]) : a[0].rest },
       "empty?": Fn.new { |a| a[0].isEmpty },
       "count":  Fn.new { |a| a[0] == null ? 0 : a[0].count },
 
