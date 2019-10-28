@@ -91,12 +91,9 @@ class Mal {
           return macroexpand(ast[1], env)
         } else if (ast[0].value == "try*") {
           if (ast.count > 2 && ast[2][0] is MalSymbol && ast[2][0].value == "catch*") {
-            var result = null
-            var fiber = Fiber.new {
-              result = eval(ast[1], env)
-              return null
-            }
-            var error = fiber.try()
+            var fiber = Fiber.new { eval(ast[1], env) }
+            var result = fiber.try()
+            var error = fiber.error
             if (!error) return result
             if (error == "___MalException___") {
               error = MalException.value
@@ -170,11 +167,9 @@ class Mal {
       var line = Readline.readLine("user> ")
       if (line == null) break
       if (line != "") {
-        var fiber = Fiber.new {
-          System.print(rep(line))
-          return null
-        }
-        var error = fiber.try()
+        var fiber = Fiber.new { System.print(rep(line)) }
+        fiber.try()
+        var error = fiber.error
         if (error) {
           if (error == "___MalException___") {
             error = Printer.pr_str(MalException.value, false)

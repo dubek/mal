@@ -78,12 +78,9 @@ class Mal {
       var line = Readline.readLine("user> ")
       if (line == null) break
       if (line != "") {
-        var fiber = Fiber.new {
-          System.print(rep(line))
-          return null
-        }
-        var error = fiber.try()
-        if (error) System.print("Error: %(error)")
+        var fiber = Fiber.new { System.print(rep(line)) }
+        fiber.try()
+        if (fiber.error) System.print("Error: %(fiber.error)")
       }
     }
     System.print()
