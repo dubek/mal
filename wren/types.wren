@@ -26,8 +26,6 @@ class MalSequential is MalVal {
       if (other[i] != this[i]) return false
     }
     return true
-    // System.print("DEBUG MalSequential.== called")
-    // return other is MalSequential && other.elements == _elements
   }
   !=(other) { !(this == other) }
 }
@@ -51,6 +49,37 @@ class MalMap is MalVal {
     }
   }
   data { _data }
+  assoc(pairsList) {
+    var newData = {}
+    for (e in _data) {
+      newData[e.key] = e.value
+    }
+    var i = 0
+    while (i < pairsList.count) {
+      newData[pairsList[i]] = pairsList[i + 1]
+      i = i + 2
+    }
+    return MalMap.new(newData)
+  }
+  dissoc(keysList) {
+    var newData = {}
+    for (e in _data) {
+      newData[e.key] = e.value
+    }
+    for (k in keysList) {
+      newData.remove(k)
+    }
+    return MalMap.new(newData)
+  }
+  ==(other) {
+    if (!(other is MalMap)) return false
+    if (other.data.count != data.count) return false
+    for (e in _data) {
+      if (other.data[e.key] != e.value) return false
+    }
+    return true
+  }
+  !=(other) { !(this == other) }
 }
 
 class MalFn is MalVal {
@@ -76,4 +105,9 @@ class MalAtom is MalVal {
   construct new(value) { _value = value }
   value { _value }
   value=(other) { _value = other }
+}
+
+class MalException {
+  static value { __exception }
+  static set(exception) { __exception = exception }
 }
