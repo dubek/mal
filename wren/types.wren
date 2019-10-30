@@ -1,6 +1,8 @@
 class MalVal {
   static newKeyword(value) { "\u029e%(value)" }
   static isKeyword(obj) { obj is String && obj.count > 0 && obj[0] == "\u029e" }
+  meta { _meta }
+  meta=(value) { _meta = value }
 }
 
 class MalSymbol is MalVal {
@@ -32,10 +34,12 @@ class MalSequential is MalVal {
 
 class MalList is MalSequential {
   construct new(elements) { super(elements) }
+  clone() { MalList.new(elements) }
 }
 
 class MalVector is MalSequential {
   construct new(elements) { super(elements) }
+  clone() { MalVector.new(elements) }
 }
 
 class MalMap is MalVal {
@@ -48,6 +52,7 @@ class MalMap is MalVal {
       i = i + 2
     }
   }
+  clone() { MalMap.new(_data) }
   data { _data }
   assoc(pairsList) {
     var newData = {}
@@ -82,6 +87,12 @@ class MalMap is MalVal {
   !=(other) { !(this == other) }
 }
 
+class MalNativeFn is MalVal {
+  construct new(fn) { _fn = fn }
+  call(args) { _fn.call(args) }
+  clone() { MalNativeFn.new(_fn) }
+}
+
 class MalFn is MalVal {
   construct new(ast, params, env, fn) {
     _ast = ast
@@ -90,14 +101,19 @@ class MalFn is MalVal {
     _fn = fn
     _isMacro = false
   }
+  construct new(ast, params, env, fn, isMacro) {
+    _ast = ast
+    _params = params
+    _env = env
+    _fn = fn
+    _isMacro = isMacro
+  }
   ast { _ast }
   params { _params }
   env { _env }
   isMacro { _isMacro }
-  makeMacro() {
-    _isMacro = true
-    return this
-  }
+  clone() { MalFn.new(_ast, _params, _env, _fn, _isMacro) }
+  makeMacro() { MalFn.new(_ast, _params, _env, _fn, true) }
   call(args) { _fn.call(args) }
 }
 
@@ -105,6 +121,7 @@ class MalAtom is MalVal {
   construct new(value) { _value = value }
   value { _value }
   value=(other) { _value = other }
+  clone() { MalAtom.new(value) }
 }
 
 class MalException {

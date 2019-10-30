@@ -154,6 +154,7 @@ class Mal {
     __repl_env.set("eval", MalNativeFn.new { |a| eval(a[0], __repl_env) })
     __repl_env.set("*ARGV*", MalList.new(Process.arguments.count > 0 ? Process.arguments[1..-1] : []))
     // core.mal: defined using the language itself
+    rep("(def! *host-language* \"wren\")")
     rep("(def! not (fn* (a) (if a false true)))")
     rep("(def! load-file (fn* (f) (eval (read-string (str \"(do \" (slurp f) \"\nnil)\")))))")
     rep("(defmacro! cond (fn* (& xs) (if (> (count xs) 0) (list 'if (first xs) (if (> (count xs) 1) (nth xs 1) (throw \"odd number of forms to cond\")) (cons 'cond (rest (rest xs)))))))")
@@ -163,6 +164,7 @@ class Mal {
       return
     }
 
+    rep("(println (str \"Mal [\" *host-language* \"]\"))")
     while (true) {
       var line = Readline.readLine("user> ")
       if (line == null) break

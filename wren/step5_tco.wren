@@ -2,7 +2,7 @@ import "./env" for Env
 import "./readline" for Readline
 import "./reader" for MalReader
 import "./printer" for Printer
-import "./types" for MalSymbol, MalList, MalVector, MalMap, MalFn
+import "./types" for MalSymbol, MalList, MalVector, MalMap, MalNativeFn, MalFn
 import "./core" for Core
 
 class Mal {
@@ -69,7 +69,7 @@ class Mal {
       if (!tco) {
         var evaled_ast = eval_ast(ast, env)
         var f = evaled_ast[0]
-        if (f is Fn) {
+        if (f is MalNativeFn) {
           return f.call(evaled_ast[1..-1])
         } else if (f is MalFn) {
           ast = f.ast
