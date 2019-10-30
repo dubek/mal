@@ -24,8 +24,10 @@ WORKDIR /mal
 RUN apt-get -y install g++
 RUN apt-get -y install git
 
-RUN cd /tmp && git clone https://github.com/wren-lang/wren.git \
+COPY wren-add-gettimeofday.patch /tmp/
+RUN cd /tmp && git clone --depth=1 https://github.com/wren-lang/wren.git \
     && cd wren \
+    && patch -p1 < /tmp/wren-add-gettimeofday.patch \
     && make \
     && cp ./wren /usr/bin/ \
     && cd /tmp && rm -rf wren
