@@ -1,20 +1,30 @@
-MAINS=$(wildcard step*.f90)
-TARGETS=$(MAINS:%.f90=%)
+MAINS = $(wildcard step*.f90)
+TARGETS = $(MAINS:%.f90=%)
+
+COMPILE = gfortran
+COMPILEFLAGS = -g -O3 -cpp
+LINK = gfortran
+LINKFLAGS = -O3
 
 .PHONY: all
 all: $(TARGETS)
 
 mal: stepA_mal
+	cp $< $@
 
-step0_repl: step0_repl.o readline.o
-step0_repl.o: readline.o
+.deps: *.f90
+	$(COMPILE) $(COMPILEFLAGS) -MM *.f90 > .deps
 
-$(TARGETS):
-	gfortran $+ -o $@
+$(TARGETS): %: %.o
+	$(LINK) $+ -o $@ $(LINKFLAGS)
+
+step0_repl: readline.o
 
 %.o: %.f90
-	gfortran -c $< -o $@
+	$(COMPILE) $(COMPILEFLAGS) -c $< -o $@
 
 .PHONY: clean
 clean:
-	rm $(BINS) *.o *.mod
+	rm -f $(TARGETS) mal *.o *.mod .deps
+
+-include .deps
