@@ -6,7 +6,8 @@ all: $(TARGETS)
 
 mal: stepA_mal
 
-step0_repl: step0_repl.o
+step0_repl: step0_repl.o readline.o
+step0_repl.o: readline.o
 
 $(TARGETS):
 	gfortran $+ -o $@
@@ -16,4 +17,4 @@ $(TARGETS):
 
 .PHONY: clean
 clean:
-	rm $(BINS) *.o
+	rm $(BINS) *.o *.mod
