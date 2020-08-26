@@ -19,6 +19,7 @@ $(TARGETS): %: %.o
 	$(LINK) $+ -o $@ $(LINKFLAGS)
 
 step0_repl: readline.o
+step1_read_print: readline.o
 
 %.o: %.f90
 	$(COMPILE) $(COMPILEFLAGS) -c $< -o $@
